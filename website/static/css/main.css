@@ -1,0 +1,15 @@
+p {
+  font-size: 50pt;
+}
+
+.full-height {
+  min-height: 80vh; /* Set the minimum height to 50% of the viewport height */
+}
+
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  margin: 0;
+}

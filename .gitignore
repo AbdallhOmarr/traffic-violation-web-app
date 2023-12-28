@@ -1,0 +1,55 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# Secret key
+*.secret
+
+# Environment variables
+.env
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# Ignore generated static files
+/staticfiles/
+
+# Ignore local development settings
+/local_settings.py
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore migration files
+**/migrations/*.py
+**/migrations/*.pyc
+
+# Ignore test database
+*.db
+
+# Ignore coverage reports
+htmlcov/
+
+# Ignore logs
+*.log
+
+# Ignore virtual environment
+myenv/

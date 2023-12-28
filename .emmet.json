@@ -1,0 +1,16 @@
+{
+    "html": {
+      "snippets": {
+        "django": [
+          "html:5",
+          "link:css",
+          "script:src",
+          "script:src + script:src",
+          "div.container>div.row>div.col-md-6",
+          "a[href=#]{Link}",
+          "img[src=img.jpg alt=img]"
+        ]
+      }
+    }
+  }
+  
