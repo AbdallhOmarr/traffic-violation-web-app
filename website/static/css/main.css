@@ -3,7 +3,12 @@ p {
 }
 
 .full-height {
+  max-height: 100vh;
   min-height: 80vh; /* Set the minimum height to 50% of the viewport height */
+}
+
+.fixed-height {
+  height: 80vh;
 }
 
 .center-div {
@@ -12,4 +17,8 @@ p {
   align-items: center;
   height: 60vh;
   margin: 0;
+}
+
+.small-text {
+  font-size: 12px; /* Adjust the font size as needed */
 }

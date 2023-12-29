@@ -1,30 +1,30 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container full-height overflow-auto">
-  <div class="table-responsive">
+<div class="container">
+  <div class="table-responsive fixed-height overflow-scroll">
     <table class="table table-striped table-hover">
-      <thead>
+      <thead class="sticky-top">
         <tr>
-          <th scope="col">Violation No.</th>
-          <th scope="col">Violation Date</th>
-          <th scope="col">Time</th>
-          <th scope="col">Bus Panel (English)</th>
-          <th scope="col">Amount (SAR)</th>
-          <th scope="col">Violation Type (English)</th>
-          <th scope="col">Violation Type (Arabic)</th>
-          <th scope="col">PTC ID#</th>
+          <th scope="col" class="small-text">Violation No.</th>
+          <th scope="col" class="small-text">Violation Date</th>
+          <th scope="col" class="small-text">Time</th>
+          <th scope="col" class="small-text">Bus Panel (English)</th>
+          <th scope="col" class="small-text">Amount (SAR)</th>
+          <th scope="col" class="small-text">Violation Type (English)</th>
+          <th scope="col" class="small-text">Violation Type (Arabic)</th>
+          <th scope="col" class="small-text">PTC ID#</th>
         </tr>
       </thead>
       <tbody>
         {% for item in violations %}
         <tr>
-          <td>{{ item.violation_id }}</td>
-          <td>{{ item.date }}</td>
-          <td>{{ item.time }}</td>
-          <td>{{ item.bus_panel }}</td>
-          <td>{{ item.amount }}</td>
-          <td>{{ item.violation_type }}</td>
-          <td>{{ item.violation_type_arabic }}</td>
-          <td>{{ item.employee }}</td>
+          <td class="small-text">{{ item.violation_id }}</td>
+          <td class="small-text">{{ item.date }}</td>
+          <td class="small-text">{{ item.time }}</td>
+          <td class="small-text">{{ item.bus_panel }}</td>
+          <td class="small-text">{{ item.amount }}</td>
+          <td class="small-text">{{ item.violation_type }}</td>
+          <td class="small-text">{{ item.violation_type_arabic }}</td>
+          <td class="small-text">{{ item.employee }}</td>
         </tr>
         {% endfor %}
       </tbody>
