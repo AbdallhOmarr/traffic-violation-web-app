@@ -50,7 +50,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
+APPEND_SLASH =True
 ROOT_URLCONF = "systemizer.urls"
 
 TEMPLATES = [
@@ -82,17 +82,28 @@ WSGI_APPLICATION = "systemizer.wsgi.application"
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'railway',          # Database name
+#         'USER': 'root',             # Database user
+#         'PASSWORD': 'g5a1FF1b61E4g15GdE-53gAGc2bEBF3A', # Database password
+#         'HOST': 'viaduct.proxy.rlwy.net',
+#         'PORT': '57604',
+#         'OPTIONS': {
+#             'charset': 'utf8mb4',
+#         },
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',          # Database name
-        'USER': 'root',             # Database user
-        'PASSWORD': 'g5a1FF1b61E4g15GdE-53gAGc2bEBF3A', # Database password
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '57604',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'NAME': 'mydb',
+        'USER': 'root',
+        'PASSWORD': 'hp3416431#',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
