@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth.decorators import login_required
-from website.models import Violation
+from website.models import Violation, Employee, PDF
 
 
 import pandas as pd 
@@ -126,4 +126,56 @@ def logout_view(request):
     return redirect('home')  
 
 
+def assign_employee(request):
+    if request.method =='POST':
+        if request.POST.get("table_row"):
+            violation_no = request.POST.get('violation_no')
+            print(f"violation no:{violation_no}")
+            violation = Violation.objects.get(violation_id=violation_no)
+            context = {
+                    "violation":violation,
+                }
 
+            if violation.employee and not violation.pdf:
+                return render(request,"assign_document.html",context)
+            elif violation.employee and violation.pdf:
+                return render(request,"success.html")
+            else:
+                employees = Employee.objects.all()
+                
+                employees_ptc = [] 
+                for employee in employees:
+                    employees_ptc.append(employee.ptc_id)
+                context = {
+                    "violation":violation,
+                    "employees_ptc":employees_ptc
+                }
+                return render(request,"assign_employee.html",context)
+
+        else:
+            if request.POST.get("pdf"):
+                violation_no = request.POST.get('violation_no')    
+                violation = Violation.objects.get(violation_id=violation_no)
+                pdf_file = request.FILES['pdfFile']
+                pdf = PDF.objects.create(file=pdf_file)
+                violation.pdf = pdf
+                violation.save()
+                return redirect("violations")
+
+            else:
+                violation_no = request.POST.get('violation_no')     
+                print(violation_no)
+
+                ptc_id = request.POST.get("employee_ptc")
+                print(f"ptc id:{ptc_id}")
+                # get violation from Violation
+                violation = Violation.objects.get(violation_id=violation_no)
+                
+                employee = Employee.objects.get(ptc_id=ptc_id)
+                
+                violation.employee = employee
+                violation.save()
+                return redirect("violations")
+        
+    
+    

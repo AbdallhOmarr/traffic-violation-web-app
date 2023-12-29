@@ -6,7 +6,7 @@ class Employee(models.Model):
     ID_number = models.BigIntegerField()
 
 class PDF(models.Model):
-    pdf_id = models.IntegerField(primary_key=True)
+    pdf_id = models.AutoField(primary_key=True)
     file = models.FileField(upload_to='pdfs/')
 
 class Violation(models.Model):

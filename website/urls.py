@@ -29,4 +29,6 @@ urlpatterns = [
     path('export_violations/', views.export_violations, name='export_violations'),
     path("new-violations",views.add_violations,name='new-violations'),
 
+    path("assign_employee",views.assign_employee,name='assign_employee'),
+
 ]

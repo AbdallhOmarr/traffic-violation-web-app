@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         {% for item in violations %}
-        <tr>
+        <tr onclick="sendPostRequest('{{ item.violation_id }}')">
           <td class="small-text">{{ item.violation_id }}</td>
           <td class="small-text">{{ item.date }}</td>
           <td class="small-text">{{ item.time }}</td>
@@ -24,7 +24,7 @@
           <td class="small-text">{{ item.amount }}</td>
           <td class="small-text">{{ item.violation_type }}</td>
           <td class="small-text">{{ item.violation_type_arabic }}</td>
-          <td class="small-text">{{ item.employee }}</td>
+          <td class="small-text">{{ item.employee.ptc_id }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -50,7 +50,34 @@
     </form>
   </div>
 </div>
+<form id="ptc-form">{% csrf_token %}</form>
 <script>
+  function sendPostRequest(violationId) {
+    // Create a form element
+    var form = document.getElementById('ptc-form');
+    form.method = 'post';
+    form.action = '{% url "assign_employee" %}'; // Replace 'your_view_name' with the actual view name
+
+    // Create an input element for the violation ID
+    var input1 = document.createElement('input');
+    input1.type = 'hidden';
+    input1.name = 'violation_no';
+    input1.value = violationId;
+    // Append the input element to the form
+    form.appendChild(input1);
+
+    // Create an input element for the violation ID
+    var input2 = document.createElement('input');
+    input2.type = 'hidden';
+    input2.name = 'table_row';
+    input2.value = 150;
+
+    // Append the input element to the form
+    form.appendChild(input2);
+
+    form.submit();
+  }
+
   function exportViolations() {
     // Submit the form using JavaScript
     document.getElementById('exportForm').submit();

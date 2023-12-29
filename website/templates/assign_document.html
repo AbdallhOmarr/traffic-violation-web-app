@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container full-height center-div">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3" style="min-width: 25vw">
+      <label for="formFile" class="form-label">Upload Document in pdf</label>
+      <input
+        class="form-control"
+        type="file"
+        id="formFile"
+        name="pdfFile"
+        accept=".pdf"
+        required
+      />
+      <input type="hidden" name="pdf" value="15" />
+      <input
+        type="hidden"
+        name="violation_no"
+        value="{{violation.violation_id}}"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Submit</button>
+  </form>
+</div>
+{% endblock %}
