@@ -23,6 +23,7 @@ urlpatterns = [
     
     path("", views.home,name='home'),
     path("violations",views.view_violation,name='violations'),
+    path('export_violations/', views.export_violations, name='export_violations'),
     path("new-violations",views.add_violations,name='new-violations'),
 
 ]

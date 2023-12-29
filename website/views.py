@@ -14,6 +14,44 @@ def view_violation(request):
     context = {'violations':violations}
     return render(request,"view_violations.html",context)
 
+
+def export_violations(request):
+    # Fetch all violations from the database
+    violations = Violation.objects.all()
+
+    # Convert queryset to DataFrame
+    data = {
+        'Violation No.': [violation.violation_id for violation in violations],
+        'Violation Date': [violation.date for violation in violations],
+        'Time': [violation.time for violation in violations],
+        'Bus Panel (English)': [violation.bus_panel for violation in violations],
+        'Amount (SAR)': [violation.amount for violation in violations],
+        'Violation Type (English)': [violation.violation_type for violation in violations],
+        'Violation Type (Arabic)': [violation.violation_type_arabic for violation in violations],
+        'PTC ID#': [violation.employee.ptc_id if violation.employee else '' for violation in violations],
+    }
+
+    df = pd.DataFrame(data)
+
+    # Create an Excel writer object
+    excel_writer = pd.ExcelWriter('violations_export.xlsx', engine='xlsxwriter')
+    
+    # Write the DataFrame to the Excel file
+    df.to_excel(excel_writer, index=False, sheet_name='Violations')
+
+    # Close the Excel writer to save the file
+    excel_writer.close()
+
+    # Create a response with the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=violations_export.xlsx'
+    df.to_excel(response, index=False, sheet_name='Violations')
+
+    return response
+
+
+
+
 def add_violations(request):
     if request.method == 'POST':
         file = request.FILES['excelFile']
@@ -56,3 +94,6 @@ def add_violations(request):
         print("Data imported successfully")
 
     return render(request, "add_violations.html")
+
+
+
