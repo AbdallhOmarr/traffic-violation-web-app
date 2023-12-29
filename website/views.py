@@ -10,7 +10,10 @@ from datetime import datetime
 
 # Create your views here.
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        return redirect('violations')  
+    else:
+        return redirect('home')  
 
 
 @login_required
@@ -125,7 +128,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')  
 
-
+@login_required
 def assign_employee(request):
     if request.method =='POST':
         if request.POST.get("table_row"):
@@ -178,4 +181,4 @@ def assign_employee(request):
                 return redirect("violations")
         
     
-    
+    return redirect("violations")

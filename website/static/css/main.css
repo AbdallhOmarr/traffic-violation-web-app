@@ -25,3 +25,15 @@ p {
 .small-text {
   font-size: 12px; /* Adjust the font size as needed */
 }
+/* Add this to your CSS stylesheet */
+
+#light-green {
+  background-color: red;
+}
+
+#dark-green {
+  background-color: #155724 !important; /* Dark green color */
+  color: #fff !important; /* White text for better visibility on dark background */
+}
+
+/* class="{% if violation.employee and not violation.pdf %}light-green{% elif violation.pdf %}dark-green{% endif %}" */

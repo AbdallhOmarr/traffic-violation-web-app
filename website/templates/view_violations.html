@@ -1,9 +1,9 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
-  <div class="table-responsive fixed-height overflow-scroll">
-    <table class="table table-striped table-hover">
+  <div class="fixed-height overflow-scroll">
+    <table class="table table-hover">
       <thead class="sticky-top">
-        <tr>
+        <tr class="">
           <th scope="col" class="small-text">Violation No.</th>
           <th scope="col" class="small-text">Violation Date</th>
           <th scope="col" class="small-text">Time</th>
@@ -15,16 +15,19 @@
         </tr>
       </thead>
       <tbody>
-        {% for item in violations %}
-        <tr onclick="sendPostRequest('{{ item.violation_id }}')">
-          <td class="small-text">{{ item.violation_id }}</td>
-          <td class="small-text">{{ item.date }}</td>
-          <td class="small-text">{{ item.time }}</td>
-          <td class="small-text">{{ item.bus_panel }}</td>
-          <td class="small-text">{{ item.amount }}</td>
-          <td class="small-text">{{ item.violation_type }}</td>
-          <td class="small-text">{{ item.violation_type_arabic }}</td>
-          <td class="small-text">{{ item.employee.ptc_id }}</td>
+        {% for violation in violations %}
+        <tr
+          onclick="sendPostRequest('{{ violation.violation_id }}')"
+          class="{% if violation.employee and not violation.pdf %}table-warning{% elif violation.pdf %}table-success{% endif %}"
+        >
+          <td class="small-text">{{ violation.violation_id }}</td>
+          <td class="small-text">{{ violation.date }}</td>
+          <td class="small-text">{{ violation.time }}</td>
+          <td class="small-text">{{ violation.bus_panel }}</td>
+          <td class="small-text">{{ violation.amount }}</td>
+          <td class="small-text">{{ violation.violation_type }}</td>
+          <td class="small-text">{{ violation.violation_type_arabic }}</td>
+          <td class="small-text">{{ violation.employee.ptc_id }}</td>
         </tr>
         {% endfor %}
       </tbody>
