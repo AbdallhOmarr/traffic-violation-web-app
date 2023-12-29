@@ -53,3 +53,5 @@ htmlcov/
 
 # Ignore virtual environment
 myenv/
+
+project_data/
