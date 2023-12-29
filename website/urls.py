@@ -22,4 +22,7 @@ from . import views
 urlpatterns = [
     
     path("", views.home,name='home'),
+    path("violations",views.view_violation,name='violations'),
+    path("new-violations",views.add_violations,name='new-violations'),
+
 ]

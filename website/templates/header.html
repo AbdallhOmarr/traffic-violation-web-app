@@ -1,17 +1,23 @@
+{% load static %}
 <nav class="py-2 bg-body-tertiary border-bottom">
   <div class="container d-flex flex-wrap">
     <ul class="nav me-auto">
       <li class="nav-item">
         <a
-          href="#"
+          href="{% url 'violations' %}"
           class="nav-link link-body-emphasis px-2 active"
           aria-current="page"
         >
-          Home
+          Violations
         </a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link link-body-emphasis px-2">Features</a>
+        <a
+          href="{% url 'new-violations' %}"
+          class="nav-link link-body-emphasis px-2"
+        >
+          New
+        </a>
       </li>
       <li class="nav-item">
         <a href="#" class="nav-link link-body-emphasis px-2">Pricing</a>
