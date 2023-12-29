@@ -1,27 +1,19 @@
 <div class="container full-height center-div">
   <div class="d-flex flex-row justify-content-center align-content-center">
     <div class="card p-3" style="width: 25vw">
-      <form>
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
         <div class="mb-3">
           <div class="d-flex justify-content-center">
             <label for="" class="fw-bold text-center">Login</label>
           </div>
 
-          <label for="exampleInputUsername" class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-          />
+          <label for="" class="form-label">Username</label>
+          <input type="text" class="form-control" name="username" />
         </div>
         <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="exampleInputPassword1"
-          />
+          <label for="" class="form-label">Password</label>
+          <input type="password" class="form-control" name="password" />
         </div>
         <div class="d-flex justify-content-center">
           <button type="submit" class="btn btn-primary w-100">Login</button>

@@ -1,13 +1,19 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
-import pandas as pd 
+from django.contrib.auth.decorators import login_required
 from website.models import Violation
+
+
+import pandas as pd 
 from datetime import datetime
+
 # Create your views here.
-
 def home(request):
-    return render(request, "home.html")
+    return render(request, 'home.html')
 
+
+@login_required
 def view_violation(request):
     violations = Violation.objects.all()
     print(violations[0].time)
@@ -15,6 +21,7 @@ def view_violation(request):
     return render(request,"view_violations.html",context)
 
 
+@login_required
 def export_violations(request):
     # Fetch all violations from the database
     violations = Violation.objects.all()
@@ -51,7 +58,7 @@ def export_violations(request):
 
 
 
-
+@login_required
 def add_violations(request):
     if request.method == 'POST':
         file = request.FILES['excelFile']
@@ -94,6 +101,29 @@ def add_violations(request):
         print("Data imported successfully")
 
     return render(request, "add_violations.html")
+
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(username)
+        print(password)
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            print('user is not none')
+            login(request,user)
+            return redirect('violations')  # Change 'dashboard' to your desired redirect URL
+        else:
+            print("user is none")
+    return render(request, 'home.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')  
 
 
 
