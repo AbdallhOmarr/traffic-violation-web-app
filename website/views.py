@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth.decorators import login_required
 from website.models import Violation, Employee, PDF
+from hijri_converter import convert
+
 
 
 import pandas as pd 
@@ -79,6 +81,11 @@ def add_violations(request):
                 # If it exists, skip to the next iteration
                 continue
             violation_date_hijri = row['تاريخ المخالفة بالهجري']
+            year, month, day = map(int, violation_date_hijri.split('-'))
+
+            # Convert to English Georgian date
+            violation_georgian_date = convert.Hijri(year=year, month=month, day=day).to_gregorian()
+
             time_str = row['وقت المخالفة']
             time = datetime.strptime(time_str, '%H:%M').time()
             bus_panel = row['لوحة المركبة']
@@ -89,7 +96,7 @@ def add_violations(request):
             # Create a Violation instance
             violation_instance = Violation(
                 violation_id=violation_id,
-                date=violation_date_hijri,
+                date=violation_georgian_date,
                 time=time,
                 bus_panel=bus_panel,
                 amount=amount,
