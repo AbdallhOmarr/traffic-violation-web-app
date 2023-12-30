@@ -1,6 +1,10 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container full-height center-div">
   <div class="flex-col">
+    <div class="flex-row mb-2 justify-content-center">
+      <label for="" class="form-label">Violation ID:</label>
+      <label for="" class="form-label">{{violation.violation_id}}</label>
+    </div>
     <div class="flex-row mb-2">
       <button type="" class="btn btn-secondary">Print Employee document</button>
     </div>

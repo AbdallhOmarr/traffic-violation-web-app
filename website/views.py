@@ -16,14 +16,14 @@ def home(request):
         return render(request,'home.html')  
 
 
-@login_required
+@login_required(login_url='home')
 def view_violation(request):
     violations = Violation.objects.all()
     context = {'violations':violations}
     return render(request,"view_violations.html",context)
 
 
-@login_required
+@login_required(login_url='home')
 def export_violations(request):
     # Fetch all violations from the database
     violations = Violation.objects.all()
@@ -60,7 +60,7 @@ def export_violations(request):
 
 
 
-@login_required
+@login_required(login_url='home')
 def add_violations(request):
     if request.method == 'POST':
         file = request.FILES['excelFile']
@@ -125,7 +125,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')  
 
-@login_required
+@login_required(login_url='home')
 def assign_employee(request):
     if request.method =='POST':
         if request.POST.get("table_row"):
