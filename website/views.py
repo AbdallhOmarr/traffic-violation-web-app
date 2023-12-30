@@ -7,7 +7,7 @@ from website.models import Violation, Employee, PDF
 from hijri_converter import convert
 
 
-
+import json 
 import pandas as pd 
 from datetime import datetime
 
@@ -22,7 +22,15 @@ def home(request):
 @login_required(login_url='home')
 def view_violation(request):
     violations = Violation.objects.all()
-    context = {'violations':violations}
+    employees = Employee.objects.all()
+    employees_ptc = [] 
+    for employee in employees:
+        employees_ptc.append(employee.ptc_id)
+
+    context = {
+        "violations":violations,
+        "employees_ptc":employees_ptc
+    }
     return render(request,"view_violations.html",context)
 
 
@@ -225,3 +233,22 @@ def assign_employee(request):
         
     
     return redirect("violations")
+
+
+
+@login_required(login_url='home')
+def get_employee(request):
+    if request.method =="POST":
+        # Parse the JSON data from the request
+        json_data = json.loads(request.body.decode('utf-8'))
+
+        # Access the data using keys
+        ptc_id = json_data.get("ptc_id")
+        
+        employee = Employee.objects.get(ptc_id=ptc_id)
+        data= {
+            "ptc_id":employee.ptc_id,
+            "employee_name":employee.employee_name,
+            "ID_number":employee.ID_number
+               }
+        return JsonResponse(data)

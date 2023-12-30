@@ -52,6 +52,17 @@ p {
   animation: fadeOut 5s forwards;
 }
 
+.popup-container-employee {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000000; /* White text color */
+  padding: 15px;
+  border-radius: 5px;
+  /* z-index: 1000; */
+}
+
 /* Add this to your CSS stylesheet */
 .popup-container-failed {
   position: fixed;
