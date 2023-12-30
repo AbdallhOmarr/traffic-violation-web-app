@@ -114,7 +114,7 @@ def add_violations(request):
                     violation_type_arabic=violation_type_arabic,
                 )
                 violation_instance.save()
-            context = {'status': 'Success', 'message': 'Adding Violation Successful'}
+            context = {'status': 'Success', 'message': 'Violation Added Successfully'}
 
         except Exception as e:
             context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
@@ -147,7 +147,7 @@ def add_violations(request):
                 violation_type_arabic=violation_type_arabic,
             )
             violation_instance.save()
-            context = {'status': 'Success', 'message': 'Adding Violation Successful'}
+            context = {'status': 'Success', 'message': 'Violation Added Successfully'}
 
         except Exception as e:
             context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
@@ -182,57 +182,77 @@ def logout_view(request):
 @login_required(login_url='home')
 def assign_employee(request):
     if request.method =='POST':
-        if request.POST.get("table_row"):
-            violation_no = request.POST.get('violation_no')
-            print(f"violation no:{violation_no}")
+        json_data = json.loads(request.body.decode('utf-8'))
+
+        # Access the data using keys
+        ptc_id = json_data.get("ptc_id")
+        violation_no = json_data.get("violation_id")
+        try:
             violation = Violation.objects.get(violation_id=violation_no)
-            context = {
-                    "violation":violation,
-                }
+            if violation.employee:
+                context = {'status': 'Failed', 'message': f'an employee hass been assigned before'}
+                return JsonResponse(context)
 
-            if violation.employee and not violation.pdf:
-                return render(request,"assign_document.html",context)
-            elif violation.employee and violation.pdf:
-                return render(request,"success.html")
-            else:
-                employees = Employee.objects.all()
+            employee = Employee.objects.get(ptc_id=ptc_id)
+            violation.employee = employee
+            violation.save()
+            context = {'status': 'Success', 'message': 'Violation Updated Successfully'}
+        except Exception as e:
+            context = {'status': 'Failed', 'message': f'Updating violation Failed due to :{e}'}
+    
+        return JsonResponse(context)
+
+    #     if request.POST.get("table_row"):
+    #         violation_no = request.POST.get('violation_no')
+    #         print(f"violation no:{violation_no}")
+    #         violation = Violation.objects.get(violation_id=violation_no)
+    #         context = {
+    #                 "violation":violation,
+    #             }
+
+    #         if violation.employee and not violation.pdf:
+    #             return render(request,"assign_document.html",context)
+    #         elif violation.employee and violation.pdf:
+    #             return render(request,"success.html")
+    #         else:
+    #             employees = Employee.objects.all()
                 
-                employees_ptc = [] 
-                for employee in employees:
-                    employees_ptc.append(employee.ptc_id)
-                context = {
-                    "violation":violation,
-                    "employees_ptc":employees_ptc
-                }
-                return render(request,"assign_employee.html",context)
+    #             employees_ptc = [] 
+    #             for employee in employees:
+    #                 employees_ptc.append(employee.ptc_id)
+    #             context = {
+    #                 "violation":violation,
+    #                 "employees_ptc":employees_ptc
+    #             }
+    #             return render(request,"assign_employee.html",context)
 
-        else:
-            if request.POST.get("pdf"):
-                violation_no = request.POST.get('violation_no')    
-                violation = Violation.objects.get(violation_id=violation_no)
-                pdf_file = request.FILES['pdfFile']
-                pdf = PDF.objects.create(file=pdf_file)
-                violation.pdf = pdf
-                violation.save()
-                return redirect("violations")
+    #     else:
+    #         if request.POST.get("pdf"):
+    #             violation_no = request.POST.get('violation_no')    
+    #             violation = Violation.objects.get(violation_id=violation_no)
+    #             pdf_file = request.FILES['pdfFile']
+    #             pdf = PDF.objects.create(file=pdf_file)
+    #             violation.pdf = pdf
+    #             violation.save()
+    #             return redirect("violations")
 
-            else:
-                violation_no = request.POST.get('violation_no')     
-                print(violation_no)
+    #         else:
+    #             violation_no = request.POST.get('violation_no')     
+    #             print(violation_no)
 
-                ptc_id = request.POST.get("employee_ptc")
-                print(f"ptc id:{ptc_id}")
-                # get violation from Violation
-                violation = Violation.objects.get(violation_id=violation_no)
+    #             ptc_id = request.POST.get("employee_ptc")
+    #             print(f"ptc id:{ptc_id}")
+    #             # get violation from Violation
+    #             violation = Violation.objects.get(violation_id=violation_no)
                 
-                employee = Employee.objects.get(ptc_id=ptc_id)
+    #             employee = Employee.objects.get(ptc_id=ptc_id)
                 
-                violation.employee = employee
-                violation.save()
-                return redirect("violations")
+    #             violation.employee = employee
+    #             violation.save()
+    #             return redirect("violations")
         
     
-    return redirect("violations")
+    # return redirect("violations")
 
 
 

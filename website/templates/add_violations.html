@@ -1,5 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container full-height center-div flex-column">
+  {% comment %} success and fail message {% endcomment %}
   <div class="popup-container hidden" id="success-popup">
     <div class="popup-content">
       <span class="popup-icon">&#10004;</span>
@@ -12,6 +13,7 @@
       <p id="fail-message"></p>
     </div>
   </div>
+  {% comment %} success and fail message {% endcomment %}
 
   <div class="d-flex flex-column" style="min-width: 25vw">
     <label for="" class="form-label">Select Add Method</label>

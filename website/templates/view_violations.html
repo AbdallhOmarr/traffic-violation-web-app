@@ -1,5 +1,20 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
+  {% comment %} success and fail message {% endcomment %}
+  <div class="popup-container hidden" id="success-popup">
+    <div class="popup-content">
+      <span class="popup-icon">&#10004;</span>
+      <p id="success-message"></p>
+    </div>
+  </div>
+  <div class="popup-container-failed hidden" id="fail-popup">
+    <div class="popup-content">
+      <span class="popup-icon">&#10008;</span>
+      <p id="fail-message"></p>
+    </div>
+  </div>
+  {% comment %} success and fail message {% endcomment %}
+
   <div class="fixed-height overflow-y-scroll">
     <table class="table table-hover">
       <thead class="sticky-top">
@@ -19,8 +34,9 @@
       <tbody>
         {% for violation in violations %}
         <tr
-          onclick="sendPostRequest('{{ violation.violation_id }}')"
+          onclick="sendPostRequest('{{ violation.violation_id }}','{{violation.employee.ptc_id}}')"
           class="{% if violation.employee and not violation.pdf %}table-warning{% elif violation.pdf %}table-success{% endif %}"
+          id="row-{{violation.violation_id}}"
         >
           <td class="small-text">{{ violation.violation_id }}</td>
           <td class="small-text">{{ violation.date }}</td>
@@ -61,7 +77,7 @@
   <div class="popup-container-employee" id="success-popup">
     <div class="popup-content">
       <div class="card p-3" style="width: 25vw">
-        <form method="post" action="{% url 'assign_employee' %}">
+        <form onsubmit="return false;">
           {% csrf_token %}
           <div class="mb-3">
             <div class="d-flex justify-content-center">
@@ -124,7 +140,11 @@
             </div>
           </div>
           <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary btn-sm w-100">
+            <button
+              type=""
+              class="btn btn-primary btn-sm w-100"
+              onclick="sendPTC();"
+            >
               Assign
             </button>
           </div>
@@ -133,7 +153,125 @@
     </div>
   </div>
 </div>
+
+<div class="hidden" id="pdfDiv">
+  <div class="popup-container-employee" id="success-popup">
+    <div class="popup-content">
+      <div class="card p-3" style="width: 25vw">
+        <div class="flex-col">
+          <div class="flex-row mb-2 justify-content-center">
+            <label for="" class="form-label">Violation ID:</label>
+            <label for="" class="form-label">{{violation.violation_id}}</label>
+          </div>
+          <div class="flex-row mb-2">
+            <button type="" class="btn btn-secondary">
+              Print Employee document
+            </button>
+          </div>
+          <div class="flex-row">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="formFile" class="form-label">
+                  Upload Document in pdf
+                </label>
+                <input
+                  class="form-control"
+                  type="file"
+                  id="formFile"
+                  name="pdfFile"
+                  accept=".pdf"
+                  required
+                />
+                <input type="hidden" name="pdf" value="15" />
+                <input
+                  type="hidden"
+                  name="violation_no"
+                  value="{{violation.violation_id}}"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <form id="ptc-form">{% csrf_token %}</form>
+
+<script>
+  // Function to show the success pop-up
+  function showSuccessPopup(status, message) {
+    var successPopup = document.getElementById('success-popup');
+    var popupMessage = document.getElementById('success-message');
+
+    popupMessage.textContent = message;
+    successPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      successPopup.classList.add('hidden');
+    }, 1000); // Adjust the delay as needed
+  }
+
+  function showFailPopup(status, message) {
+    var failPopup = document.getElementById('fail-popup');
+    var popupMessage = document.getElementById('fail-message');
+
+    popupMessage.textContent = message;
+    failPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      failPopup.classList.add('hidden');
+    }, 1000); // Adjust the delay as needed
+  }
+</script>
+<script>
+  function sendPTC() {
+    var violation_no_elm = document.getElementById('violation_no_hidden');
+    var violation_id = violation_no_elm.value;
+    console.log(violation_id);
+    var ptc_id_element = document.getElementById('employee_ptc');
+    var ptc_id = ptc_id_element.value;
+    console.log(ptc_id);
+    const csrfToken = '{{csrf_token}}';
+    const apiUrl = '/assign_employee';
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ ptc_id: ptc_id, violation_id: violation_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        employeDiv = document.getElementById('employeDiv');
+        employeDiv.classList.add('hidden');
+        var employee_name_element = document.getElementById('employee_name_id');
+        employee_name_element.textContent = '';
+        var IDnumber_element = document.getElementById('id_number');
+        IDnumber_element.textContent = '';
+        ptc_id_element.value = '';
+        tr_row_elm = document.getElementById('row-' + violation_id);
+        tr_row_elm.classList.add('table-warning');
+        if (data['status'] == 'Success') {
+          showSuccessPopup(data['status'], data['message']);
+        } else if (data['status'] == 'Failed') {
+          showFailPopup(data['status'], data['message']);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+</script>
 <script>
   $(document).ready(function () {
     // Initialize Select2
@@ -173,14 +311,20 @@
   });
 </script>
 <script>
-  function sendPostRequest(violationID) {
-    employeDiv = document.getElementById('employeDiv');
-    employeDiv.classList.remove('hidden');
+  function sendPostRequest(violationID, ptc_id) {
+    console.log('ptc id is ' + ptc_id);
+    if (ptc_id != '') {
+      employeDiv = document.getElementById('pdfDiv');
+      employeDiv.classList.remove('hidden');
+    } else {
+      employeDiv = document.getElementById('employeDiv');
+      employeDiv.classList.remove('hidden');
 
-    violation_id_label = document.getElementById('violation_no');
-    violation_id_label.textContent = violationID;
-    violation_id_input = document.getElementById('violation_no_hidden');
-    violation_id_input.value = violationID;
+      violation_id_label = document.getElementById('violation_no');
+      violation_id_label.textContent = violationID;
+      violation_id_input = document.getElementById('violation_no_hidden');
+      violation_id_input.value = violationID;
+    }
   }
 
   /*

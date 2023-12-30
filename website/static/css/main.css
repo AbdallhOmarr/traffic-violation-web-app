@@ -84,10 +84,15 @@ p {
 }
 
 .popup-icon {
-  font-size: 18px;
+  font-size: 40px;
   margin-right: 10px;
 }
-
+#success-message {
+  font-size: 28pt;
+}
+#fail-message {
+  font-size: 28pt;
+}
 /* Keyframe animation for fade-out effect */
 @keyframes fadeOut {
   0% {
