@@ -10,7 +10,7 @@ class PDF(models.Model):
     file = models.FileField(upload_to='pdfs/')
 
 class Violation(models.Model):
-    violation_id = models.CharField(max_length=255, primary_key=True)
+    violation_id = models.CharField(max_length=255, primary_key=True,blank=False,null=False)
     date = models.DateField()
     time = models.TimeField()
     bus_panel = models.CharField(max_length=255)

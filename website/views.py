@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from website.models import Violation, Employee, PDF
 from hijri_converter import convert
@@ -64,49 +65,87 @@ def export_violations(request):
 
 @login_required(login_url='home')
 def add_violations(request):
-    if request.method == 'POST':
-        file = request.FILES['excelFile']
-        df = pd.read_excel(file)
-        if "رقم المخالفة" in df.columns:
-            pass 
-        else:
-            df = pd.read_excel(file,header=1)
-            print("header on 2nd row")
-        
-        for index, row in df.iterrows():
-            violation_id = str(row['رقم المخالفة'])
-            print(violation_id)
-            # Check if a Violation with the given violation_id already exists
-            if Violation.objects.filter(violation_id=violation_id).exists():
-                # If it exists, skip to the next iteration
-                continue
-            violation_date_hijri = row['تاريخ المخالفة بالهجري']
-            year, month, day = map(int, violation_date_hijri.split('-'))
+    if request.method == 'POST' and request.POST.get("excel"):
+        try:
+            file = request.FILES['excelFile']
+            df = pd.read_excel(file)
+            if "رقم المخالفة" in df.columns:
+                pass 
+            else:
+                df = pd.read_excel(file,header=1)
+                print("header on 2nd row")
+            
+            for index, row in df.iterrows():
+                violation_id = str(row['رقم المخالفة'])
+                print(violation_id)
+                # Check if a Violation with the given violation_id already exists
+                if Violation.objects.filter(violation_id=violation_id).exists():
+                    # If it exists, skip to the next iteration
+                    continue
+                violation_date_hijri = row['تاريخ المخالفة بالهجري']
+                year, month, day = map(int, violation_date_hijri.split('-'))
 
-            # Convert to English Georgian date
-            violation_georgian_date = convert.Hijri(year=year, month=month, day=day).to_gregorian()
+                # Convert to English Georgian date
+                violation_georgian_date = convert.Hijri(year=year, month=month, day=day).to_gregorian()
 
-            time_str = row['وقت المخالفة']
-            time = datetime.strptime(time_str, '%H:%M').time()
-            bus_panel = row['لوحة المركبة']
-            amount = row['مبلغ المخالفة']
-            violation_type = row['تفاصيل المخالفة بالانجليزي']
-            violation_type_arabic = row['تفاصيل المخالفة بالعربي']
+                time_str = row['وقت المخالفة']
+                time = datetime.strptime(time_str, '%H:%M').time()
+                bus_panel = row['لوحة المركبة']
+                amount = row['مبلغ المخالفة']
+                violation_type = row['تفاصيل المخالفة بالانجليزي']
+                violation_type_arabic = row['تفاصيل المخالفة بالعربي']
 
-            # Create a Violation instance
+                # Create a Violation instance
+                violation_instance = Violation(
+                    violation_id=violation_id,
+                    date=violation_georgian_date,
+                    time=time,
+                    bus_panel=bus_panel,
+                    amount=amount,
+                    violation_type=violation_type,
+                    violation_type_arabic=violation_type_arabic,
+                )
+                violation_instance.save()
+            context = {'status': 'Success', 'message': 'Adding Violation Successful'}
+
+        except Exception as e:
+            context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
+
+        return render(request, "add_violations.html",context=context)
+    
+    elif request.method == 'POST' and request.POST.get("inputbyform"):
+        try:
+            
+            violation_no = request.POST.get('violation_no')
+                            # Check if a Violation with the given violation_id already exists
+            if Violation.objects.filter(violation_id=violation_no).exists():
+                context = {'status': 'Failed', 'message': f'Violation No. Duplicated'}
+                return render(request, "add_violations.html",context=context)
+
+            date = request.POST.get("date")
+            time = request.POST.get("time")
+            bus_plate = request.POST.get("bus_plate")
+            amount = request.POST.get("amount")
+            violation_type_arabic  = request.POST.get("violation_type_arabic")
+            violation_type_english  = request.POST.get("violation_type_eng")
+            
             violation_instance = Violation(
-                violation_id=violation_id,
-                date=violation_georgian_date,
+                violation_id=violation_no,
+                date=date,
                 time=time,
-                bus_panel=bus_panel,
+                bus_panel=bus_plate,
                 amount=amount,
-                violation_type=violation_type,
+                violation_type=violation_type_english,
                 violation_type_arabic=violation_type_arabic,
             )
             violation_instance.save()
+            context = {'status': 'Success', 'message': 'Adding Violation Successful'}
 
-        print("Data imported successfully")
-        return redirect('violations')
+        except Exception as e:
+            context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
+
+        return render(request, "add_violations.html",context=context)
+
     return render(request, "add_violations.html")
 
 

@@ -14,6 +14,11 @@ p {
 .fixed-width1 {
   width: 10vw;
 }
+
+.fixed-height2 {
+  height: 50vh;
+}
+
 .center-div {
   display: flex;
   justify-content: center;
@@ -24,4 +29,65 @@ p {
 
 .small-text {
   font-size: 12px;
+}
+
+.hidden-div {
+  display: None;
+}
+
+/* CSS FOR POP UP SUCCESS MSG  */
+
+/* Add this to your CSS stylesheet */
+.popup-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #5cb85c; /* Green background color */
+  color: #fff; /* White text color */
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeOut 5s forwards;
+}
+
+/* Add this to your CSS stylesheet */
+.popup-container-failed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ff0000; /* Green background color */
+  color: #fff; /* White text color */
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeOut 2s forwards;
+}
+
+.popup-content {
+  display: flex;
+  align-items: center;
+}
+
+.popup-icon {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* Keyframe animation for fade-out effect */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Hide the popup initially */
+.hidden {
+  display: none;
 }
