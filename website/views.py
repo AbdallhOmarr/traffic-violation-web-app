@@ -44,12 +44,21 @@ def view_violation(request):
     merged_data= []
     for violation in violations:
         plate_ar = violation.bus_plate # check if its arabic? 
-        vehicle= simple_search(vehicles,plate_ar)
-
+        vehicle= Vehicle.objects.get(plate_ar = plate_ar)
         violation_dict = model_to_dict(violation)
         vehicle_dict = model_to_dict(vehicle)
+    
+        print()
+        if violation.employee:
+            employee_dict = model_to_dict(violation.employee)
+        else:
+            employee_dict = {
+                "ptc_id":"",
+                "ID_number":None,
+                "employee_name":None
+            }
         if vehicle:
-            merged_data.append({**violation_dict, **vehicle_dict})        
+            merged_data.append({**violation_dict, **vehicle_dict,**employee_dict})        
         
     context = {
         "violations":merged_data,
@@ -63,17 +72,20 @@ def view_violation(request):
 def export_violations(request):
     # Fetch all violations from the database
     violations = Violation.objects.all()
-
+    
     # Convert queryset to DataFrame
     data = {
         'Violation No.': [violation.violation_id for violation in violations],
         'Violation Date': [violation.date for violation in violations],
         'Time': [violation.time for violation in violations],
-        'Bus Panel (English)': [violation.bus_plate for violation in violations],
+        'Bus Plate': [violation.bus_plate for violation in violations],
+        'Fleet no': [Vehicle.objects.get(plate_ar = violation.bus_plate).fleet_no for violation in violations],
+        'vehicle user': [Vehicle.objects.get(plate_ar = violation.bus_plate).vehicle_user for violation in violations],
         'Amount (SAR)': [violation.amount for violation in violations],
         'Violation Type (English)': [violation.violation_type for violation in violations],
         'Violation Type (Arabic)': [violation.violation_type_arabic for violation in violations],
         'PTC ID#': [violation.employee.ptc_id if violation.employee else '' for violation in violations],
+        
     }
 
     df = pd.DataFrame(data)
