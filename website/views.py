@@ -45,10 +45,9 @@ def view_violation(request):
     for violation in violations:
         plate_ar = violation.bus_plate # check if its arabic? 
         vehicle= Vehicle.objects.get(plate_ar = plate_ar)
+            
         violation_dict = model_to_dict(violation)
         vehicle_dict = model_to_dict(vehicle)
-    
-        print()
         if violation.employee:
             employee_dict = model_to_dict(violation.employee)
         else:
@@ -141,7 +140,11 @@ def add_violations(request):
                 violation_type_arabic = row['تفاصيل المخالفة بالعربي']
 
                 # Create a Violation instance
-                violation_instance = Violation(
+                vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+                print(f"vehicle:{vehicle}")
+                
+                if vehicle:
+                    violation_instance = Violation(
                     violation_id=violation_id,
                     date=violation_georgian_date,
                     time=time,
@@ -149,8 +152,24 @@ def add_violations(request):
                     amount=amount,
                     violation_type=violation_type,
                     violation_type_arabic=violation_type_arabic,
-                )
-                violation_instance.save()
+                    )
+
+                    violation_instance.save()
+                else:
+                    vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+                    if vehicle:
+                        violation_instance = Violation(
+                        violation_id=violation_id,
+                        date=violation_georgian_date,
+                        time=time,
+                        bus_plate=vehicle.plate_ar,
+                        amount=amount,
+                        violation_type=violation_type,
+                        violation_type_arabic=violation_type_arabic,
+                        )
+                        violation_instance.save()
+                    else:
+                        context = {'status': 'Failed', 'message': f"Plate no. doesn't belong to our fleet, please add vehicle to fleet!"}
             context = {'status': 'Success', 'message': 'Violation Added Successfully'}
 
         except Exception as e:
@@ -174,7 +193,13 @@ def add_violations(request):
             violation_type_arabic  = request.POST.get("violation_type_arabic")
             violation_type_english  = request.POST.get("violation_type_eng")
             
-            violation_instance = Violation(
+
+            # Create a Violation instance
+            vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+            print(f"vehicle:{vehicle}")
+            
+            if vehicle:
+                violation_instance = Violation(
                 violation_id=violation_no,
                 date=date,
                 time=time,
@@ -182,9 +207,30 @@ def add_violations(request):
                 amount=amount,
                 violation_type=violation_type_english,
                 violation_type_arabic=violation_type_arabic,
-            )
-            violation_instance.save()
-            context = {'status': 'Success', 'message': 'Violation Added Successfully'}
+                )
+
+                violation_instance.save()
+                context = {'status': 'Success', 'message': 'Violation Added Successfully'}
+
+            else:
+                vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+                if vehicle:
+                    violation_instance = Violation(
+                    violation_id=violation_id,
+                    date=violation_georgian_date,
+                    time=time,
+                    bus_plate=vehicle.plate_ar,
+                    amount=amount,
+                    violation_type=violation_type,
+                    violation_type_arabic=violation_type_arabic,
+                    )
+                    violation_instance.save()
+                    context = {'status': 'Success', 'message': 'Violation Added Successfully'}
+
+                else:
+                    context = {'status': 'Failed', 'message': f"Plate no. doesn't belong to our fleet, please add vehicle to fleet!"}
+
+
 
         except Exception as e:
             context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
@@ -229,7 +275,7 @@ def assign_employee(request):
         try:
             violation = Violation.objects.get(violation_id=violation_no)
             if violation.employee:
-                context = {'status': 'Failed', 'message': f'an employee hass been assigned before'}
+                context = {'status': 'Failed', 'message': f'an employee has been assigned before'}
                 return JsonResponse(context)
 
             employee = Employee.objects.get(ptc_id=ptc_id)
@@ -250,7 +296,7 @@ def assign_employee(request):
             violation = Violation.objects.get(violation_id=violation_no)
             
             if violation.pdf:
-                context = {'status': 'Failed', 'message': f'an employee hass been assigned before'}
+                context = {'status': 'Failed', 'message': f'PDF document has been assigned before'}
                 return JsonResponse(context)
 
             pdf_file = request.FILES['pdfFile']
