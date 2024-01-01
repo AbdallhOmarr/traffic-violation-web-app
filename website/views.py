@@ -3,13 +3,19 @@ from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from website.models import Violation, Employee, PDF
+from django.forms.models import model_to_dict
+
+from website.models import Violation, Employee, PDF , Vehicle
 from hijri_converter import convert
 
 
 import json 
 import pandas as pd 
 from datetime import datetime
+
+from docxtpl import InlineImage
+from docxtpl import DocxTemplate
+
 
 # Create your views here.
 def home(request):
@@ -18,19 +24,38 @@ def home(request):
     else:
         return render(request,'home.html')  
 
+def simple_search(lst,req_item):
+    for item in lst:
+        if item.plate_ar == req_item:
+            return item 
+    return None
+
 
 @login_required(login_url='home')
 def view_violation(request):
     violations = Violation.objects.all()
     employees = Employee.objects.all()
+    vehicles = Vehicle.objects.all()
     employees_ptc = [] 
     for employee in employees:
         employees_ptc.append(employee.ptc_id)
+    
+    
+    merged_data= []
+    for violation in violations:
+        plate_ar = violation.bus_plate # check if its arabic? 
+        vehicle= simple_search(vehicles,plate_ar)
 
+        violation_dict = model_to_dict(violation)
+        vehicle_dict = model_to_dict(vehicle)
+        if vehicle:
+            merged_data.append({**violation_dict, **vehicle_dict})        
+        
     context = {
-        "violations":violations,
+        "violations":merged_data,
         "employees_ptc":employees_ptc
     }
+    
     return render(request,"view_violations.html",context)
 
 
@@ -44,7 +69,7 @@ def export_violations(request):
         'Violation No.': [violation.violation_id for violation in violations],
         'Violation Date': [violation.date for violation in violations],
         'Time': [violation.time for violation in violations],
-        'Bus Panel (English)': [violation.bus_panel for violation in violations],
+        'Bus Panel (English)': [violation.bus_plate for violation in violations],
         'Amount (SAR)': [violation.amount for violation in violations],
         'Violation Type (English)': [violation.violation_type for violation in violations],
         'Violation Type (Arabic)': [violation.violation_type_arabic for violation in violations],
@@ -98,7 +123,7 @@ def add_violations(request):
 
                 time_str = row['وقت المخالفة']
                 time = datetime.strptime(time_str, '%H:%M').time()
-                bus_panel = row['لوحة المركبة']
+                bus_plate = row['لوحة المركبة']
                 amount = row['مبلغ المخالفة']
                 violation_type = row['تفاصيل المخالفة بالانجليزي']
                 violation_type_arabic = row['تفاصيل المخالفة بالعربي']
@@ -108,7 +133,7 @@ def add_violations(request):
                     violation_id=violation_id,
                     date=violation_georgian_date,
                     time=time,
-                    bus_panel=bus_panel,
+                    bus_plate=bus_plate,
                     amount=amount,
                     violation_type=violation_type,
                     violation_type_arabic=violation_type_arabic,
@@ -141,7 +166,7 @@ def add_violations(request):
                 violation_id=violation_no,
                 date=date,
                 time=time,
-                bus_panel=bus_plate,
+                bus_plate=bus_plate,
                 amount=amount,
                 violation_type=violation_type_english,
                 violation_type_arabic=violation_type_arabic,
@@ -181,7 +206,9 @@ def logout_view(request):
 
 @login_required(login_url='home')
 def assign_employee(request):
-    if request.method =='POST':
+    context = {'status': 'Failed', 'message': 'not post req'}
+
+    if request.method =='POST' and not request.POST.get("pdf"):
         json_data = json.loads(request.body.decode('utf-8'))
 
         # Access the data using keys
@@ -196,63 +223,33 @@ def assign_employee(request):
             employee = Employee.objects.get(ptc_id=ptc_id)
             violation.employee = employee
             violation.save()
+    
             context = {'status': 'Success', 'message': 'Violation Updated Successfully'}
+    
         except Exception as e:
             context = {'status': 'Failed', 'message': f'Updating violation Failed due to :{e}'}
     
-        return JsonResponse(context)
-
-    #     if request.POST.get("table_row"):
-    #         violation_no = request.POST.get('violation_no')
-    #         print(f"violation no:{violation_no}")
-    #         violation = Violation.objects.get(violation_id=violation_no)
-    #         context = {
-    #                 "violation":violation,
-    #             }
-
-    #         if violation.employee and not violation.pdf:
-    #             return render(request,"assign_document.html",context)
-    #         elif violation.employee and violation.pdf:
-    #             return render(request,"success.html")
-    #         else:
-    #             employees = Employee.objects.all()
-                
-    #             employees_ptc = [] 
-    #             for employee in employees:
-    #                 employees_ptc.append(employee.ptc_id)
-    #             context = {
-    #                 "violation":violation,
-    #                 "employees_ptc":employees_ptc
-    #             }
-    #             return render(request,"assign_employee.html",context)
-
-    #     else:
-    #         if request.POST.get("pdf"):
-    #             violation_no = request.POST.get('violation_no')    
-    #             violation = Violation.objects.get(violation_id=violation_no)
-    #             pdf_file = request.FILES['pdfFile']
-    #             pdf = PDF.objects.create(file=pdf_file)
-    #             violation.pdf = pdf
-    #             violation.save()
-    #             return redirect("violations")
-
-    #         else:
-    #             violation_no = request.POST.get('violation_no')     
-    #             print(violation_no)
-
-    #             ptc_id = request.POST.get("employee_ptc")
-    #             print(f"ptc id:{ptc_id}")
-    #             # get violation from Violation
-    #             violation = Violation.objects.get(violation_id=violation_no)
-                
-    #             employee = Employee.objects.get(ptc_id=ptc_id)
-                
-    #             violation.employee = employee
-    #             violation.save()
-    #             return redirect("violations")
-        
     
-    # return redirect("violations")
+    elif request.method=='POST' and request.POST.get("pdf"):
+        print("pdf")
+        try:
+            violation_no = request.POST.get('violation_no')    
+            print(violation_no)
+            violation = Violation.objects.get(violation_id=violation_no)
+            
+            if violation.pdf:
+                context = {'status': 'Failed', 'message': f'an employee hass been assigned before'}
+                return JsonResponse(context)
+
+            pdf_file = request.FILES['pdfFile']
+            pdf = PDF.objects.create(file=pdf_file)
+            violation.pdf = pdf
+            violation.save()
+            context = {'status': 'Success', 'message': 'Violation Updated Successfully'}
+        except Exception as e:
+            context = {'status': 'Failed', 'message': f'Updating violation Failed due to :{e}'}
+
+    return JsonResponse(context)
 
 
 
@@ -272,3 +269,50 @@ def get_employee(request):
             "ID_number":employee.ID_number
                }
         return JsonResponse(data)
+    
+    
+    
+## printing document with request value
+
+@login_required(login_url='home')
+def print_document(request):
+    if request.method == 'POST':
+        #request data
+        # Retrieve JSON data from the request body
+        data = json.loads(request.body.decode('utf-8'))
+        violation_no = data.get('violation_no')        #get violation from db
+        violation = Violation.objects.get(violation_id=violation_no)
+        vehicle = Vehicle.objects.get(plate_ar=violation.bus_plate)
+
+        print(vehicle)        
+        #employee data
+        employee = violation.employee
+        context = {
+            "violation_no":violation.violation_id,
+            "date":violation.date,
+            "time":violation.time,
+            "amount":violation.amount,
+            "violation_type_eng":violation.violation_type,
+            "violation_type_araic":violation.violation_type_arabic,
+            
+            "employee_name":employee.employee_name,
+            "ptc_id":employee.ptc_id,
+            "id_number":employee.ID_number,
+            
+            "vehicle_type":vehicle.vehicle_type,
+            "plate_no":vehicle.plate_eng
+        }
+        document_path = "document.docx"
+        doc = DocxTemplate(document_path)
+        doc.render(context)
+        
+        
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = f'attachment; filename={violation_no}_violation_report.docx'
+        doc.save(response)
+
+        return response
+        
+
+        
+    

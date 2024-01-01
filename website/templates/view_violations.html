@@ -23,8 +23,9 @@
           <th scope="col" class="small-text">Violation Date</th>
           <th scope="col" class="small-text">Time</th>
           <th scope="col" class="small-text">Vehicle Plate</th>
-          <th scope="col" class="small-text">Vehicle User</th>
           <th scope="col" class="small-text">Fleet No.</th>
+
+          <th scope="col" class="small-text">Vehicle User</th>
 
           <th scope="col" class="small-text">Amount (SAR)</th>
           <th scope="col" class="small-text">Violation Type</th>
@@ -41,9 +42,9 @@
           <td class="small-text">{{ violation.violation_id }}</td>
           <td class="small-text">{{ violation.date }}</td>
           <td class="small-text">{{ violation.time }}</td>
-          <td class="small-text">{{ violation.bus_panel }}</td>
-          <td class="small-text"></td>
-          <td class="small-text"></td>
+          <td class="small-text">{{ violation.plate_eng }}</td>
+          <td class="small-text">{{violation.fleet_no}}</td>
+          <td class="small-text">{{ violation.vehicle_user}}</td>
           <td class="small-text">{{ violation.amount }}</td>
           <td class="small-text">{{ violation.violation_type }}</td>
           <td class="small-text" id="row-td-{{violation.violation_id}}">
@@ -217,12 +218,6 @@
                 placeholder="Disabled input"
                 disabled
               />
-
-              <input
-                type="hidden"
-                name="violation_no_hidden"
-                id="violation_no_hidden_pdf"
-              />
             </div>
 
             <div class="flex-row w-50 justify-content-center">
@@ -268,12 +263,16 @@
             />
           </div>
           <div class="flex-row mb-2">
-            <button type="" class="btn btn-secondary w-100">
+            <button
+              type=""
+              onclick="print_doc()"
+              class="btn btn-secondary w-100"
+            >
               Print Employee document
             </button>
           </div>
           <div class="flex-row">
-            <form method="POST" enctype="multipart/form-data">
+            <form enctype="multipart/form-data" id="myForm">
               {% csrf_token %}
               <div class="mb-3">
                 <label for="formFile" class="form-label">
@@ -291,10 +290,15 @@
                 <input
                   type="hidden"
                   name="violation_no"
+                  id="violation_no_hidden_pdf"
                   value="{{violation.violation_id}}"
                 />
               </div>
-              <button type="submit" class="btn btn-primary w-100">
+              <button
+                type="button"
+                onclick="submitForm()"
+                class="btn btn-primary w-100"
+              >
                 Submit
               </button>
             </form>
@@ -307,6 +311,96 @@
 
 <form id="ptc-form">{% csrf_token %}</form>
 
+<script>
+  // submit post request to download document
+  function print_doc() {
+    var violation_no_elm = document.getElementById('violation_no_pdf');
+    var violation_id = violation_no_elm.value;
+
+    console.log(violation_id);
+    const csrfToken = '{{ csrf_token }}';
+
+    fetch('/print-violation', {
+      method: 'POST',
+      body: JSON.stringify({ violation_no: violation_id }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.blob(); // Convert the response to a Blob
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a temporary <a> element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${violation_id}_violation_report.docx`;
+        document.body.appendChild(a);
+        a.click();
+
+        // Remove the temporary <a> element
+        document.body.removeChild(a);
+
+        // Release the Object URL to free up resources
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Handle the error appropriately, e.g., display an error message to the user
+      });
+  }
+</script>
+
+<script>
+  function submitForm() {
+    // Get form element
+    var form = document.getElementById('myForm');
+
+    // Create FormData object and append form data
+    var formData = new FormData(form);
+    const csrfToken = '{{csrf_token}}';
+
+    // Fetch POST request
+    fetch('/assign_employee', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': csrfToken, // Include CSRF token in headers
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+        // Handle success, if needed
+        if (data['status'] == 'Success') {
+          showSuccessPopup(data['status'], data['message']);
+          pdfDiv = document.getElementById('pdfDiv');
+          pdfDiv.classList.add('hidden');
+          violation_id_label = document.getElementById('violation_no_pdf');
+
+          tr_row_elm = document.getElementById(
+            'row-' + violation_id_label.value,
+          );
+          tr_row_elm.classList.remove('table-warning');
+          tr_row_elm.classList.add('table-success');
+
+          //          location.reload();
+        } else if (data['status'] == 'Failed') {
+          showFailPopup(data['status'], data['message']);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Handle errors, if needed
+      });
+  }
+</script>
 <script>
   // JavaScript function to close the pdfDiv
   function closePdfDiv() {
@@ -354,6 +448,7 @@
   function sendPTC() {
     var violation_no_elm = document.getElementById('violation_no_hidden');
     var violation_id = violation_no_elm.value;
+
     console.log(violation_id);
     var ptc_id_element = document.getElementById('employee_ptc');
     var ptc_id = ptc_id_element.value;
@@ -434,7 +529,17 @@
     });
   });
 </script>
-
+<script>
+  function checkptc(ptc_id) {
+    if (ptc_id.trim() == '') {
+      console.log('ptc is empty');
+      return true;
+    } else {
+      console.log('ptc is not empty');
+      return false;
+    }
+  }
+</script>
 <script>
   //view pdfDiv
 
@@ -442,16 +547,10 @@
     pdfDiv = document.getElementById('pdfDiv');
     employeDiv = document.getElementById('employeDiv');
     ptc_id_element = document.getElementById('row-td-' + violationID);
-    console.log(ptc_id_element.textContent.length == 0);
-    if (ptc_id_element.textContent.length == 0) {
-      console.log('add employee');
-      console.log('ptc id' + ptc_id_element.textContent);
-    } else {
-      console.log('add employee');
-      console.log('ptc id' + ptc_id_element.textContent);
-    }
+    console.log(ptc_id_element);
+    checkptc(ptc_id_element.textContent);
 
-    if (ptc_id == '') {
+    if (checkptc(ptc_id_element.textContent)) {
       employeDiv.classList.remove('hidden');
       pdfDiv.classList.add('hidden');
 
@@ -470,7 +569,7 @@
       violation_type_elem = document.getElementById('violation_type_pdf');
       violation_type_elem.value = violation_type;
       ptc_id_pdf_elm = document.getElementById('ptc_id_pdf');
-      ptc_id_pdf_elm.value = ptc_id; // Replace 'your_csrf_token' with the actual CSRF token if needed
+      ptc_id_pdf_elm.value = ptc_id_element.textContent.trim();
 
       const csrfToken = '{{csrf_token}}';
 
@@ -483,7 +582,7 @@
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
         },
-        body: JSON.stringify({ ptc_id: ptc_id }),
+        body: JSON.stringify({ ptc_id: ptc_id_element.textContent.trim() }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -492,6 +591,8 @@
           employee_name_element.value = data['employee_name'];
           var IDnumber_element = document.getElementById('id_number_pdf');
           IDnumber_element.value = data['ID_number'];
+          // tr_row_elm = document.getElementById('row-' + violation_id);
+          // tr_row_elm.classList.add('table-warning');
         })
         .catch((error) => {
           console.error('Error:', error);

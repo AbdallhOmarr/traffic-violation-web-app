@@ -28,7 +28,8 @@ urlpatterns = [
     path("violations",views.view_violation,name='violations'),
     path('export_violations/', views.export_violations, name='export_violations'),
     path("new-violations",views.add_violations,name='new-violations'),
-
+    path("print-violation",views.print_document,name="print-violation"),
+    
     path("assign_employee",views.assign_employee,name='assign_employee'),
     path("get-employee",views.get_employee,name="get-employee")
 
