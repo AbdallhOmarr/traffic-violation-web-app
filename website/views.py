@@ -337,6 +337,8 @@ def get_employee(request):
     
     
 ## printing document with request value
+class EmployeeAssignmentError(Exception):
+    pass
 
 @login_required(login_url='home')
 def print_document(request):
@@ -346,37 +348,39 @@ def print_document(request):
         data = json.loads(request.body.decode('utf-8'))
         violation_no = data.get('violation_no')        #get violation from db
         violation = Violation.objects.get(violation_id=violation_no)
-        vehicle = violation.vehicle
+        
+        if violation.employee:
+            vehicle = violation.vehicle
 
-        print(vehicle)        
-        #employee data
-        employee = violation.employee
-        context = {
-            "violation_no":violation.violation_id,
-            "date":violation.date,
-            "time":violation.time,
-            "amount":violation.amount,
-            "violation_type_eng":violation.violation_type,
-            "violation_type_arabic":violation.violation_type_arabic,
+            print(vehicle)        
+            #employee data
+            employee = violation.employee
+            context = {
+                "violation_no":violation.violation_id,
+                "date":violation.date,
+                "time":violation.time,
+                "amount":violation.amount,
+                "violation_type_eng":violation.violation_type,
+                "violation_type_arabic":violation.violation_type_arabic,
+                
+                "employee_name":employee.employee_name,
+                "ptc_id":employee.ptc_id,
+                "id_number":employee.ID_number,
+                
+                "vehicle_type":vehicle.vehicle_type,
+                "plate_no":vehicle.plate_eng
+            }
+            document_path = "document.docx"
+            doc = DocxTemplate(document_path)
+            doc.render(context)
             
-            "employee_name":employee.employee_name,
-            "ptc_id":employee.ptc_id,
-            "id_number":employee.ID_number,
             
-            "vehicle_type":vehicle.vehicle_type,
-            "plate_no":vehicle.plate_eng
-        }
-        document_path = "document.docx"
-        doc = DocxTemplate(document_path)
-        doc.render(context)
-        
-        
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        response['Content-Disposition'] = f'attachment; filename={violation_no}_violation_report.docx'
-        doc.save(response)
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename={violation_no}_violation_report.docx'
+            doc.save(response)
 
-        return response
+            return response
         
 
-        
-    
+        else:
+            raise EmployeeAssignmentError("Assign employee")
