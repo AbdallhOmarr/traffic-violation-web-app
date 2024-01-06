@@ -126,6 +126,7 @@ def add_violations(request):
                 if Violation.objects.filter(violation_id=violation_id).exists():
                     # If it exists, skip to the next iteration
                     continue
+                
                 violation_date_hijri = row['تاريخ المخالفة بالهجري']
                 year, month, day = map(int, violation_date_hijri.split('-'))
 
@@ -139,8 +140,10 @@ def add_violations(request):
                 violation_type = row['تفاصيل المخالفة بالانجليزي']
                 violation_type_arabic = row['تفاصيل المخالفة بالعربي']
 
+                print(f"bus plate:{bus_plate}")
                 # Create a Violation instance
                 vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+
                 print(f"vehicle:{vehicle}")
                 
                 if vehicle:
@@ -156,7 +159,7 @@ def add_violations(request):
 
                     violation_instance.save()
                 else:
-                    vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+                    vehicle = Vehicle.objects.get(plate_ar=bus_plate)
                     if vehicle:
                         violation_instance = Violation(
                         violation_id=violation_id,
@@ -195,10 +198,12 @@ def add_violations(request):
             
 
             # Create a Violation instance
-            vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+            # vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+            vehicle = True
+
             print(f"vehicle:{vehicle}")
             
-            if vehicle:
+            if True:
                 violation_instance = Violation(
                 violation_id=violation_no,
                 date=date,
@@ -213,7 +218,8 @@ def add_violations(request):
                 context = {'status': 'Success', 'message': 'Violation Added Successfully'}
 
             else:
-                vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+                # vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+                vehicle = True
                 if vehicle:
                     violation_instance = Violation(
                     violation_id=violation_id,

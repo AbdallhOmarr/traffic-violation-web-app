@@ -114,3 +114,36 @@ p {
   left: 50%;
   transform: translate(50%, 50%);
 }
+
+.violation_no {
+  width: 5dvw;
+}
+.date {
+  width: 5dvw;
+}
+
+.timing {
+  width: 5dvw;
+}
+.violation_plate {
+  width: 5dvw;
+}
+.fleet {
+  width: 5dvw;
+}
+
+.vehicle_user {
+  width: 5dvw;
+}
+
+.violation_type {
+  width: 10dvw;
+}
+
+.ptc_id {
+  width: 5dvw;
+}
+
+.table {
+  width: auto !important;
+}

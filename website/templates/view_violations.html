@@ -19,17 +19,15 @@
     <table class="table table-hover">
       <thead class="sticky-top">
         <tr class="">
-          <th scope="col" class="small-text">Violation No.</th>
-          <th scope="col" class="small-text">Violation Date</th>
-          <th scope="col" class="small-text">Time</th>
-          <th scope="col" class="small-text">Vehicle Plate</th>
-          <th scope="col" class="small-text">Fleet No.</th>
+          <th scope="col" class="small-text violation_no">Violation No.</th>
+          <th scope="col" class="small-text date">Date</th>
+          <th scope="col" class="small-text timing">Timing</th>
+          <th scope="col" class="small-text violation_plate">Vehicle Plate</th>
+          <th scope="col" class="small-text fleet">Fleet</th>
 
-          <th scope="col" class="small-text">Vehicle User</th>
-
-          <th scope="col" class="small-text">Amount (SAR)</th>
-          <th scope="col" class="small-text">Violation Type</th>
-          <th scope="col" class="small-text">PTC ID#</th>
+          <th scope="col" class="small-text vehicle_user">Vehicle User</th>
+          <th scope="col" class="small-text violation_type">Violation Type</th>
+          <th scope="col" class="small-text ptc_id">PTC ID</th>
         </tr>
       </thead>
       <tbody>
@@ -45,7 +43,6 @@
           <td class="small-text">{{ violation.plate_eng }}</td>
           <td class="small-text">{{violation.fleet_no}}</td>
           <td class="small-text">{{ violation.vehicle_user}}</td>
-          <td class="small-text">{{ violation.amount }}</td>
           <td class="small-text">{{ violation.violation_type }}</td>
           <td class="small-text" id="row-td-{{violation.violation_id}}">
             {{ violation.ptc_id }}
