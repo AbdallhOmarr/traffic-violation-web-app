@@ -8,23 +8,24 @@ class Employee(models.Model):
 class PDF(models.Model):
     pdf_id = models.AutoField(primary_key=True)
     file = models.FileField(upload_to='pdfs/')
-
-class Violation(models.Model):
-    violation_id = models.CharField(max_length=255, primary_key=True,blank=False,null=False)
-    date = models.DateField()
-    time = models.TimeField()
-    bus_plate = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=8, decimal_places=2)
-    violation_type = models.TextField()
-    violation_type_arabic = models.TextField()
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,null=True,blank=True)
-    pdf = models.ForeignKey(PDF, on_delete=models.CASCADE,null=True,blank=True)
-    
     
 class Vehicle(models.Model):
     fleet_no = models.BigIntegerField()
     vehicle_user = models.CharField(max_length=255)
     plate_eng = models.CharField(max_length=255, primary_key=True)
-    plate_ar = models.CharField(max_length=255,)
+    plate_ar = models.CharField(max_length=255)
     vehicle_type = models.CharField(max_length=255,default = 'Bus')
+
+class Violation(models.Model):
+    violation_id = models.CharField(max_length=255, primary_key=True,blank=False,null=False)
+    date = models.DateField()
+    time = models.TimeField()
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    violation_type = models.TextField()
+    violation_type_arabic = models.TextField()
+
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,null=True,blank=True)
+    pdf = models.ForeignKey(PDF, on_delete=models.CASCADE,null=True,blank=True)
+    
     

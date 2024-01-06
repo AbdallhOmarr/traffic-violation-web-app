@@ -137,7 +137,7 @@ p {
 }
 
 .violation_type {
-  width: 10dvw;
+  width: 20dvw;
 }
 
 .ptc_id {
@@ -146,4 +146,28 @@ p {
 
 .table {
   width: auto !important;
+}
+.employee-ptc-select
+  + .select2-container
+  .select2-selection--single
+  .select2-selection__rendered {
+  font-size: 11px; /* Adjust the font size as needed */
+}
+
+.employee-ptc-select + .select2-container .select2-results__option {
+  font-size: 11px; /* Adjust the font size as needed */
+}
+
+.select2-results__option {
+  font-size: 11px; /* Adjust the font size as needed */
+}
+.select2-results__option--selectable {
+  font-size: 11px; /* Adjust the font size as needed */
+}
+
+.select2-results__option--selected {
+  font-size: 11px; /* Adjust the font size as needed */
+}
+.select2-search__field {
+  font-size: 11px; /* Adjust the font size as needed */
 }
