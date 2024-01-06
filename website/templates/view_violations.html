@@ -53,9 +53,10 @@
               id="employee_ptc_{{ violation.violation_id }}"
               style="width=100%"
               onchange="handleSelectChange('{{ violation.violation_id }}')"
-            >
+            >  <option value="" {% if not violation.ptc_id %}selected{% endif %}></option>
+
               {% for employee_ptc in employees_ptc %}
-              <option name="ptc_id" value="{{ employee_ptc }}">
+              <option name="ptc_id" value="{{ employee_ptc }}" {% if employee_ptc == violation.ptc_id %}selected{% endif %}>
                 {{ employee_ptc }}
               </option>
               {% endfor %}
@@ -84,7 +85,11 @@
             </button>
           </td>
           <td>
-            <button type="button" class="btn btn-light shadow btn-sm rounded-5">
+            <button
+              type="button"
+              class="btn btn-light shadow btn-sm rounded-5"
+              onclick="print_doc('{{ violation.violation_id }}')"
+            >
               <div class="d-flex justify-content-center align-items-center">
                 <span class="me-1">Print</span>
                 <svg
@@ -369,11 +374,7 @@
 
 <script>
   // submit post request to download document
-  function print_doc() {
-    var violation_no_elm = document.getElementById('violation_no_pdf');
-    var violation_id = violation_no_elm.value;
-
-    console.log(violation_id);
+  function print_doc(violation_id) {
     const csrfToken = '{{ csrf_token }}';
 
     fetch('/print-violation', {
@@ -507,7 +508,7 @@
     const csrfToken = '{{csrf_token}}';
     const apiUrl = '/assign_employee';
     fetch(apiUrl, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
@@ -519,15 +520,8 @@
         console.log(data);
         //employeDiv = document.getElementById('employeDiv');
         //employeDiv.classList.add('hidden');
-        {% comment %} var employee_name_element = document.getElementById('employee_name_id');
-        employee_name_element.value = '';
-        var IDnumber_element = document.getElementById('id_number');
-        IDnumber_element.value = '';
-        ptc_id_element.value = ''; {% endcomment %}
         tr_row_elm = document.getElementById('row-' + violation_id);
         tr_row_elm.classList.add('table-warning');
-        ptc_id_elm = document.getElementById('row-td-' + violation_id);
-        ptc_id_elm.textContent = ptc_id;
 
         if (data['status'] == 'Success') {
           showSuccessPopup(data['status'], data['message']);

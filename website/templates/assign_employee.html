@@ -28,7 +28,16 @@
               style="width: 100%"
             >
               {% for employee_ptc in employees_ptc %}
-              <option name="ptc_id" value="{{ employee_ptc }}">
+              <option
+                name="ptc_id"
+                value="{{ employee_ptc }}"
+                {%
+                if
+                employee_ptc="violation.ptc_id"
+                %}selected{%
+                endif
+                %}
+              >
                 {{ employee_ptc }}
               </option>
               {% endfor %}

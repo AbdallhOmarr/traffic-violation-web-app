@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 
 from website.models import Violation, Employee, PDF , Vehicle
 from hijri_converter import convert
-
+import xlwings as xw
 
 import json 
 import pandas as pd 
@@ -76,9 +76,9 @@ def export_violations(request):
         'Violation No.': [violation.violation_id for violation in violations],
         'Violation Date': [violation.date for violation in violations],
         'Time': [violation.time for violation in violations],
-        'Bus Plate': [violation.bus_plate for violation in violations],
-        'Fleet no': [Vehicle.objects.get(plate_ar = violation.bus_plate).fleet_no for violation in violations],
-        'vehicle user': [Vehicle.objects.get(plate_ar = violation.bus_plate).vehicle_user for violation in violations],
+        'Bus Plate': [violation.vehicle.plate_ar for violation in violations],
+        'Fleet no': [violation.vehicle.fleet_no for violation in violations],
+        'vehicle user': [violation.vehicle.vehicle_user for violation in violations],
         'Amount (SAR)': [violation.amount for violation in violations],
         'Violation Type (English)': [violation.violation_type for violation in violations],
         'Violation Type (Arabic)': [violation.violation_type_arabic for violation in violations],
@@ -93,9 +93,37 @@ def export_violations(request):
     
     # Write the DataFrame to the Excel file
     df.to_excel(excel_writer, index=False, sheet_name='Violations')
+    # Get the xlsxwriter workbook and worksheet objects
+    workbook = excel_writer.book
+    worksheet = excel_writer.sheets['Violations']
 
     # Close the Excel writer to save the file
     excel_writer.close()
+
+    # wb = xw.Book('violations_export.xlsx')
+    # sheet = wb.sheets['Violations'] 
+
+    # column_widths = {
+    #     'A': 50,
+    #     'B': 50,
+    #     'C': 50,
+    #     'D': 50,
+    #     'E': 50,
+    #     'F': 100,
+    #     'G': 50,
+    #     'H': 100,
+    #     'I': 100,
+    #     'J': 50,
+    # }
+
+    # for col, width in column_widths.items():
+    #     sheet.range(f'{col}:{col}').column_width = width
+
+    # # Save the Excel file
+    # file_path = 'violations_export.xlsx'
+    # wb.save(file_path)
+    # wb.close()
+
 
     # Create a response with the Excel file
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -248,7 +276,7 @@ def logout_view(request):
 def assign_employee(request):
     context = {'status': 'Failed', 'message': 'not post req'}
 
-    if request.method =='POST' and not request.POST.get("pdf"):
+    if request.method in ('POST','PUT') and not request.POST.get("pdf"):
         json_data = json.loads(request.body.decode('utf-8'))
 
         # Access the data using keys
@@ -256,10 +284,6 @@ def assign_employee(request):
         violation_no = json_data.get("violation_id")
         try:
             violation = Violation.objects.get(violation_id=violation_no)
-            if violation.employee:
-                context = {'status': 'Failed', 'message': f'an employee has been assigned before'}
-                return JsonResponse(context)
-
             employee = Employee.objects.get(ptc_id=ptc_id)
             violation.employee = employee
             violation.save()
@@ -322,7 +346,7 @@ def print_document(request):
         data = json.loads(request.body.decode('utf-8'))
         violation_no = data.get('violation_no')        #get violation from db
         violation = Violation.objects.get(violation_id=violation_no)
-        vehicle = Vehicle.objects.get(plate_ar=violation.bus_plate)
+        vehicle = violation.vehicle
 
         print(vehicle)        
         #employee data
@@ -333,7 +357,7 @@ def print_document(request):
             "time":violation.time,
             "amount":violation.amount,
             "violation_type_eng":violation.violation_type,
-            "violation_type_araic":violation.violation_type_arabic,
+            "violation_type_arabic":violation.violation_type_arabic,
             
             "employee_name":employee.employee_name,
             "ptc_id":employee.ptc_id,
