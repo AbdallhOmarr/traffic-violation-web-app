@@ -97,16 +97,28 @@ WSGI_APPLICATION = "systemizer.wsgi.application"
 # }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'mydb',
+#         'USER': 'root',
+#         'PASSWORD': 'hp3416431#',
+#         'HOST': 'localhost',
+#         'PORT': '8051',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'twv',
         'USER': 'abdalla',
         'PASSWORD': '123456',
-        'HOST': '192.168.1.23',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
+
 
 
 # Password validation
