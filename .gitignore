@@ -8,7 +8,7 @@ __pycache__/
 *.log
 *.pot
 *.pyc
-db.sqlite3
+
 media/
 
 # Secret key
@@ -43,7 +43,7 @@ docker-compose.yml
 **/migrations/*.pyc
 
 # Ignore test database
-*.db
+
 
 # Ignore coverage reports
 htmlcov/
