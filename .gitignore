@@ -31,10 +31,6 @@ Pipfile.lock
 .vscode/
 .idea/
 
-# Ignore Docker files
-Dockerfile
-docker-compose.yml
-
 # Ignore compiled Python files
 *.pyc
 
