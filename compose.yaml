@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  tvw:
+    container_name: tvw
+    build:
+      context: ./tvw
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - my_network3
+    restart: always  
+    volumes:
+      - tvw_data:/app
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - tvw
+    networks:
+      - my_network3
+    restart: always
+      
+    volumes:
+      - tvw_data:/app
+
+    
+networks:
+  my_network3:
+    driver: bridge
+
+
+volumes:
+  tvw_data:
