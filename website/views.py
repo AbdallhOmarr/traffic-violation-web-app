@@ -7,7 +7,6 @@ from django.forms.models import model_to_dict
 
 from website.models import Violation, Employee, PDF , Vehicle
 from hijri_converter import convert
-import xlwings as xw
 
 import json 
 import pandas as pd 
@@ -93,36 +92,36 @@ def export_violations(request):
     
     # Write the DataFrame to the Excel file
     df.to_excel(excel_writer, index=False, sheet_name='Violations')
-    # Get the xlsxwriter workbook and worksheet objects
-    workbook = excel_writer.book
-    worksheet = excel_writer.sheets['Violations']
+    # # Get the xlsxwriter workbook and worksheet objects
+    # workbook = excel_writer.book
+    # worksheet = excel_writer.sheets['Violations']
 
-    # Close the Excel writer to save the file
+    # # Close the Excel writer to save the file
     excel_writer.close()
 
-    # wb = xw.Book('violations_export.xlsx')
-    # sheet = wb.sheets['Violations'] 
+    # # wb = xw.Book('violations_export.xlsx')
+    # # sheet = wb.sheets['Violations'] 
 
-    # column_widths = {
-    #     'A': 50,
-    #     'B': 50,
-    #     'C': 50,
-    #     'D': 50,
-    #     'E': 50,
-    #     'F': 100,
-    #     'G': 50,
-    #     'H': 100,
-    #     'I': 100,
-    #     'J': 50,
-    # }
+    # # column_widths = {
+    # #     'A': 50,
+    # #     'B': 50,
+    # #     'C': 50,
+    # #     'D': 50,
+    # #     'E': 50,
+    # #     'F': 100,
+    # #     'G': 50,
+    # #     'H': 100,
+    # #     'I': 100,
+    # #     'J': 50,
+    # # }
 
-    # for col, width in column_widths.items():
-    #     sheet.range(f'{col}:{col}').column_width = width
+    # # for col, width in column_widths.items():
+    # #     sheet.range(f'{col}:{col}').column_width = width
 
-    # # Save the Excel file
-    # file_path = 'violations_export.xlsx'
-    # wb.save(file_path)
-    # wb.close()
+    # # # Save the Excel file
+    # # file_path = 'violations_export.xlsx'
+    # # wb.save(file_path)
+    # # wb.close()
 
 
     # Create a response with the Excel file

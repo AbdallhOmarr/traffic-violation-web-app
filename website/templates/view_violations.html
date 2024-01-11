@@ -41,7 +41,7 @@
         >
           <td class="small-text">{{ violation.violation_id }}</td>
           <td class="small-text">{{ violation.date }}</td>
-          <td class="small-text">{{ violation.time }}</td>
+          <td class="small-text">{{ violation.time|time:"H:i" }}</td>
           <td class="small-text">{{ violation.plate_eng }}</td>
           <td class="small-text">{{violation.fleet_no}}</td>
           <td class="small-text">{{ violation.vehicle_user}}</td>

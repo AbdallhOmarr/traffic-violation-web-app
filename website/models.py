@@ -14,18 +14,16 @@ class Vehicle(models.Model):
     vehicle_user = models.CharField(max_length=255)
     plate_eng = models.CharField(max_length=255, primary_key=True)
     plate_ar = models.CharField(max_length=255)
-    vehicle_type = models.CharField(max_length=255,default = 'Bus')
+    vehicle_type = models.CharField(max_length=255, default='Bus')
 
 class Violation(models.Model):
-    violation_id = models.CharField(max_length=255, primary_key=True,blank=False,null=False)
+    violation_id = models.CharField(max_length=255, primary_key=True, blank=False, null=False)
     date = models.DateField()
     time = models.TimeField()
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     violation_type = models.TextField()
     violation_type_arabic = models.TextField()
 
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE,null=True,blank=True)
-    pdf = models.ForeignKey(PDF, on_delete=models.CASCADE,null=True,blank=True)
-    
-    
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, default="")
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, default="")
+    pdf = models.ForeignKey(PDF, on_delete=models.CASCADE, null=True, blank=True, default="")
