@@ -28,7 +28,7 @@ services:
     restart: always
       
     volumes:
-      - tvw_data:/app
+      - tvw_static:/app/static
 
     
 networks:
@@ -38,3 +38,4 @@ networks:
 
 volumes:
   tvw_data:
+  tvw_static:
