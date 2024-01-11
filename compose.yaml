@@ -29,6 +29,7 @@ services:
     restart: always
       
     volumes:
+      - tvw_data:/app
       - tvw_static:/app/static
 
     
