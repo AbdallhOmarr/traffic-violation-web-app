@@ -73,7 +73,6 @@ def view_violation(request):
             violation_type_arabic = row['تفاصيل المخالفة بالعربي']
 
 
-            print(f"bus plate:{bus_plate}")
             # Create a Violation instance
             try:
                 vehicle = Vehicle.objects.get(plate_ar=bus_plate)
