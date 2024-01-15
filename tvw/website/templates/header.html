@@ -215,8 +215,26 @@
 <script>
   function show_new_form() {
     console.log('show new form');
-    add_violation_elm = document.getElementById('add_violation');
-    add_violation_elm.classList.remove('hide');
+
+    // Check if the user is logged in (you may need to adapt this based on your authentication mechanism)
+    if (isUserLoggedIn()) {
+      add_violation_elm = document.getElementById('add_violation');
+      add_violation_elm.classList.remove('hide');
+    } else {
+      console.log('User is not logged in. Cannot show new form.');
+      // You might want to handle this case, for example, by redirecting the user to the login page.
+    }
+  }
+
+  // Dummy function, replace with your actual authentication check
+  function isUserLoggedIn() {
+    var user_auth = '{{user.is_authenticated}}';
+    console.log(user_auth);
+    if (user_auth == 'True') {
+      return true;
+    } else {
+      return false;
+    }
   }
 </script>
 
