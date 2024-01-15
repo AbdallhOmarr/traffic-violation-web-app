@@ -13,7 +13,8 @@
       </li>
       <li class="nav-item">
         <a
-          href="{% url 'new-violations' %}"
+          href="#"
+          onclick="show_new_form()"
           class="nav-link link-body-emphasis px-2"
         >
           New
@@ -42,3 +43,231 @@
     </ul>
   </div>
 </nav>
+<div class="hide" id="add_violation">
+  <div
+    class="modal modal-sheet position-fixed d-block p-4 py-md-5"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div class="modal-dialog" role="document" id="modalTour">
+      <div class="modal-content rounded-4 shadow">
+        <div class="modal-header">
+          <button
+            type="button"
+            class="close btn-close"
+            onclick="closeModal()"
+          ></button>
+        </div>
+
+        <div class="modal-body" style="width: 25vw">
+          <div
+            class="d-flex flex-column justify-content-center align-items-center w-100"
+            style="width: 20vw"
+          >
+            <label for="" class="form-label">Select Add Method</label>
+            <select class="form-select mb-3" id="selection_method">
+              <option value="excel">Add by Excel</option>
+              <option value="form" selected>Add by Form</option>
+            </select>
+          </div>
+
+          <div class="fixed-height2 w-100" id="formDiv">
+            <form action="" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="inputbyform" value="150" />
+
+              <div class="w-100" style="width: 20vw">
+                <label for="formFile" class="form-label">
+                  Add new violations
+                </label>
+              </div>
+
+              <div class="d-flex">
+                <div class="mb-3 w-100">
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="violation_no"
+                    placeholder="Violation No."
+                    required
+                  />
+                </div>
+              </div>
+              <div class="d-flex flex-row">
+                <div class="mb-3 me-3 w-100">
+                  <input
+                    type="date"
+                    class="form-control"
+                    name="date"
+                    placeholder="date"
+                    required
+                  />
+                </div>
+                <div class="mb-3 w-100">
+                  <input
+                    type="time"
+                    class="form-control"
+                    name="time"
+                    placeholder="time"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="d-flex flex-row">
+                <div class="mb-3 me-3 w-100">
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="bus_plate"
+                    placeholder="Bus Plate in Arabic Only"
+                    required
+                  />
+                </div>
+                <div class="mb-3 w-100">
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="amount"
+                    placeholder="Amount (SAR)"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <div class="form-floating mb-3 w-100">
+                  <textarea
+                    class="form-control"
+                    placeholder="Leave a comment here"
+                    id="floatingTextarea"
+                    name="violation_type_arabic"
+                    style="height: 10vh"
+                  ></textarea>
+                  <label for="floatingTextarea">Violation Type in Arabic</label>
+                </div>
+
+                <div class="form-floating mb-3 w-100">
+                  <textarea
+                    class="form-control"
+                    placeholder="Leave a comment here"
+                    id="floatingTextarea"
+                    name="violation_type_eng"
+                    style="height: 10vh"
+                    required
+                  ></textarea>
+                  <label for="floatingTextarea">
+                    Violation Type in English
+                  </label>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+          </div>
+
+          <div class="fixed-height2 hidden-div" id="excelDiv">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="excel" value="100" />
+              <div class="mb-3" style="width: 20vw">
+                <label for="formFile" class="form-label">
+                  Add new violations - Select Excel file (xls or xlsx)
+                </label>
+                <input
+                  class="form-control"
+                  type="file"
+                  id="formFile"
+                  name="excelFile"
+                  accept=".xls, .xlsx"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #modalTour {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hide {
+    display: none;
+  }
+</style>
+<script>
+  function closeModal() {
+    add_violation_elm = document.getElementById('add_violation');
+    add_violation_elm.classList.add('hide');
+  }
+</script>
+
+<script>
+  function show_new_form() {
+    console.log('show new form');
+    add_violation_elm = document.getElementById('add_violation');
+    add_violation_elm.classList.remove('hide');
+  }
+</script>
+
+<script>
+  document
+    .getElementById('selection_method')
+    .addEventListener('change', function () {
+      var selectedMethod = this.value;
+      console.log(selectedMethod);
+      // Show/hide divs based on the selected method
+      if (selectedMethod === 'excel') {
+        document.getElementById('excelDiv').classList.remove('hidden-div');
+        document.getElementById('formDiv').classList.add('hidden-div');
+      } else if (selectedMethod === 'form') {
+        document.getElementById('formDiv').classList.remove('hidden-div');
+        document.getElementById('excelDiv').classList.add('hidden-div');
+      }
+    });
+
+  // Function to show the success pop-up
+  function showSuccessPopup(status, message) {
+    var successPopup = document.getElementById('success-popup');
+    var popupMessage = document.getElementById('success-message');
+
+    popupMessage.textContent = message;
+    successPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      successPopup.classList.add('hidden');
+    }, 5000); // Adjust the delay as needed
+  }
+
+  function showFailPopup(status, message) {
+    var failPopup = document.getElementById('fail-popup');
+    var popupMessage = document.getElementById('fail-message');
+
+    popupMessage.textContent = message;
+    failPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      failPopup.classList.add('hidden');
+    }, 20000); // Adjust the delay as needed
+  }
+
+  var status = '{{status}}';
+  var message = '{{message}}';
+  if (status == 'Success') {
+    showSuccessPopup(status, message);
+  } else if (status == 'Failed') {
+    showFailPopup(status, message);
+  }
+</script>
