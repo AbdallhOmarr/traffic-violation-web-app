@@ -369,7 +369,19 @@
   </div>
 </div>
 {% endcomment %}
-
+<script>
+  {% if messages %}
+      {% for message in messages %}
+          var msg = "{{message}}"
+          if(msg == "sucess"){
+            showSuccessPopup('success',"Violation submitted successfully!")
+          }
+          else{
+            showFailPopup('fail',"Violation no. Duplicated")
+          }
+      {% endfor %}
+  {% endif %}
+</script>
 <form id="ptc-form">{% csrf_token %}</form>
 
 <script>

@@ -14,6 +14,7 @@ from datetime import datetime
 
 from docxtpl import InlineImage
 from docxtpl import DocxTemplate
+from django.contrib import messages
 
 
 # Create your views here.
@@ -32,6 +33,120 @@ def simple_search(lst,req_item):
 
 @login_required(login_url='home')
 def view_violation(request):
+     # adding violation by excel
+    if request.method == 'POST' and request.POST.get("excel"):
+        print("adding violation by excel")
+        # try:
+        file = request.FILES['excelFile']
+        df = pd.read_excel(file)
+        
+        #dynamically get table header from info in it
+        if "رقم المخالفة" in df.columns:
+            pass 
+        else:
+            df = pd.read_excel(file,header=1)
+            print("header on 2nd row")
+        
+        # loop over each row in violations
+        for index, row in df.iterrows():
+            violation_id = str(row['رقم المخالفة'])  # getting this value to construct violation instance
+            print(f"processing violation:{violation_id}")
+            
+            # Check if a Violation with the given violation_id already exists
+            if Violation.objects.filter(violation_id=violation_id).exists():
+                # If it exists, skip to the next iteration
+                continue
+            
+            violation_date_hijri = row['تاريخ المخالفة بالهجري'] 
+            year, month, day = map(int, violation_date_hijri.split('-')) 
+
+            # Convert to English Georgian date
+            violation_georgian_date = convert.Hijri(year=year, month=month, day=day).to_gregorian()  
+
+            time_str = row['وقت المخالفة']
+            time = datetime.strptime(time_str, '%H:%M').time() 
+            
+            # getting bus plate in arabic will be used to construct vehicle instance 
+            bus_plate = row['لوحة المركبة']
+            amount = row['مبلغ المخالفة']
+            violation_type = row['تفاصيل المخالفة بالانجليزي']
+            violation_type_arabic = row['تفاصيل المخالفة بالعربي']
+
+
+            print(f"bus plate:{bus_plate}")
+            # Create a Violation instance
+            try:
+                vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+            except:
+                vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+
+            if vehicle:
+                violation_instance = Violation(
+                violation_id=violation_id,
+                date=violation_georgian_date,
+                time=time,
+                vehicle=vehicle,
+                amount=amount,
+                violation_type=violation_type,
+                violation_type_arabic=violation_type_arabic,
+                )
+
+                violation_instance.save()
+                    
+        context = {'status': 'Success', 'message': 'Violation Added Successfully'}
+
+        # except Exception as e:
+        #     context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
+        messages.success(request, 'success')
+
+        return redirect("violations")
+    
+    elif request.method == 'POST' and request.POST.get("inputbyform"):
+        try:
+            
+            violation_no = request.POST.get('violation_no')
+                            # Check if a Violation with the given violation_id already exists
+            if Violation.objects.filter(violation_id=violation_no).exists():
+                context = {'status': 'Failed', 'message': f'Violation No. Duplicated'}
+                messages.warning(request, 'duplicate')
+
+                return redirect("violations")
+
+            date = request.POST.get("date")
+            time = request.POST.get("time")
+            bus_plate = request.POST.get("bus_plate")
+            amount = request.POST.get("amount")
+            violation_type_arabic  = request.POST.get("violation_type_arabic")
+            violation_type_english  = request.POST.get("violation_type_eng")
+            
+
+            # Create a Violation instance
+            try:
+                vehicle = Vehicle.objects.get(plate_ar=bus_plate)
+            except:
+                vehicle = Vehicle.objects.get(plate_eng=bus_plate)
+
+            if vehicle:
+                violation_instance = Violation(
+                violation_id=violation_no,
+                date=date,
+                time=time,
+                vehicle=vehicle,
+                amount=amount,
+                violation_type=violation_type_english,
+                violation_type_arabic=violation_type_arabic,
+                )
+
+                violation_instance.save()
+                context = {'status': 'Success', 'message': 'Violation Added Successfully'}
+
+
+        except Exception as e:
+            context = {'status': 'Failed', 'message': f'Adding violation Failed due to :{e}'}
+        
+        messages.success(request, 'sucess')
+        return redirect("violations")
+    
     violations = Violation.objects.all()
     employees = Employee.objects.all()
     vehicles = Vehicle.objects.all()
