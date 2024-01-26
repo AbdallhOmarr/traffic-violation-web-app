@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 
-from website.models import Violation, Employee, PDF , Vehicle
+from website.models import Violation, Employee, PDF , Vehicle, Violation_Type
 from hijri_converter import convert
 
 import json 
@@ -149,6 +149,8 @@ def view_violation(request):
     violations = Violation.objects.all()
     employees = Employee.objects.all()
     vehicles = Vehicle.objects.all()
+    violation_types = Violation_Type.objects.all()
+    
     employees_ptc = [] 
     for employee in employees:
         employees_ptc.append(employee.ptc_id)
@@ -173,7 +175,8 @@ def view_violation(request):
         
     context = {
         "violations":merged_data,
-        "employees_ptc":employees_ptc
+        "employees_ptc":employees_ptc,
+        "violation_types":violation_types
     }
     
     return render(request,"view_violations.html",context)
@@ -378,6 +381,7 @@ def login_view(request):
             return redirect('violations')  # Change 'dashboard' to your desired redirect URL
         else:
             print("user is none")
+            messages.error(request,"Invalid login credentials")
     return render(request, 'home.html')
 
 
@@ -497,3 +501,20 @@ def print_document(request):
 
         else:
             raise EmployeeAssignmentError("Assign employee")
+
+
+
+@login_required(login_url='home')
+def get_cost_by_violation_en(request):
+    if request.method == 'POST':
+        violation_en = request.POST.get('violation_en', None)
+
+        if violation_en:
+            try:
+                violation = Violation_Type.objects.get(violation_en=violation_en)
+                violation_cost = violation.violation_cost
+                return JsonResponse({'violation_cost': violation_cost})
+            except Violation_Type.DoesNotExist:
+                return JsonResponse({'error': 'Violation not found'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)

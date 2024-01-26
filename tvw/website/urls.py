@@ -31,6 +31,7 @@ urlpatterns = [
     path("print-violation",views.print_document,name="print-violation"),
     
     path("assign_employee",views.assign_employee,name='assign_employee'),
-    path("get-employee",views.get_employee,name="get-employee")
+    path("get-employee",views.get_employee,name="get-employee"),
+    path('get_cost', views.get_cost_by_violation_en, name='get_cost_by_violation_en'),
 
 ]
