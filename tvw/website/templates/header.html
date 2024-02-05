@@ -54,6 +54,7 @@
     class="modal modal-sheet position-fixed d-block p-4 py-md-5"
     tabindex="-1"
     role="dialog"
+    id="myModel"
   >
     <div class="modal-dialog" role="document" id="modalTour">
       <div class="modal-content rounded-4 shadow">
@@ -65,6 +66,7 @@
           ></button>
         </div>
 
+<<<<<<< HEAD
         <div class="modal-body">
           <div
             class="d-flex flex-column justify-content-center align-items-center w-100"
@@ -205,6 +207,134 @@
                 </div>
               </div>
             </div>
+=======
+        <div class="modal-body" style="">
+          {% comment %}
+          <div
+            class="d-flex flex-column justify-content-center align-items-center w-100"
+            style="width: 20vw"
+          >
+            <label for="" class="form-label">Select Add Method</label>
+            <select class="form-select mb-3" id="selection_method">
+              <option value="excel">Add by Excel</option>
+              <option value="form" selected>Add by Form</option>
+            </select>
+          </div>
+          {% endcomment %}
+
+          <div class="w-100" id="formDiv">
+            <form action="" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="inputbyform" value="150" />
+
+              <div class="w-100" style="">
+                <label for="formFile" class="form-label">
+                  Add new violation Details
+                </label>
+              </div>
+
+              <div class="row mb-3">
+                {% comment %} // violation no col {% endcomment %}
+                <div class="col ms-3 me-3 mb-1">
+                  <div class="row">Voilation No</div>
+                  <div class="row">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="violation_no"
+                      placeholder="Violation No."
+                      required
+                    />
+                  </div>
+                </div>
+
+                {% comment %} Date col {% endcomment %}
+                <div class="col me-3 b-1">
+                  <div class="row">Date</div>
+                  <div class="row">
+                    <input
+                      type="date"
+                      class="form-control"
+                      name="date"
+                      placeholder="date"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {% comment %} Time col {% endcomment %}
+                <div class="col me-3 b-1">
+                  <div class="row">Time</div>
+                  <div class="row">
+                    <input
+                      type="time"
+                      class="form-control"
+                      name="time"
+                      placeholder="time"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="col me-3 b-1">
+                  <div class="row">Plate No.</div>
+                  <div class="row">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="bus_plate"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3 justify-content-center">
+                <div class="row">
+                  <select
+                    class="form-select violation_selection"
+                    aria-label="Default select example"
+                    id="violation_selection"
+                  >
+                    <option selected>Open this select menu</option>
+                    {% for violation_type in violation_types %}
+                    <option value="">{{violation_type.violation_en}}</option>
+
+                    {% endfor %}
+                  </select>
+                  <div class="row justify-content-center text-center">
+                    <label for="" id="costDisplay"></label>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+          </div>
+
+          <div class="fixed-height2 hidden-div" id="excelDiv">
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="excel" value="100" />
+              <div class="mb-3" style="">
+                <label for="formFile" class="form-label">
+                  Add new violations - Select Excel file (xls or xlsx)
+                </label>
+                <input
+                  class="form-control"
+                  type="file"
+                  id="formFile"
+                  name="excelFile"
+                  accept=".xls, .xlsx"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+>>>>>>> 1679edbeb3804011354b6735043555a201abcd79
           </div>
         </div>
       </div>
@@ -313,3 +443,160 @@
     </div>
   </div>
 </div>
+<<<<<<< HEAD
+=======
+
+<style>
+  /* Your custom CSS file or style block in your HTML file */
+  #myModel .modal-dialog {
+    max-width: 800px; /* Set your desired width here */
+    width: 80%; /* You can use a percentage or any other valid CSS width value */
+  }
+
+  #modalTour {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hide {
+    display: none;
+  }
+</style>
+
+<style>
+  .modal {
+    width: 80dvw !important;
+  }
+  #modalTour {
+    width: 80dvw !important;
+  }
+</style>
+
+<script>
+  function closeModal() {
+    add_violation_elm = document.getElementById('add_violation');
+    add_violation_elm.classList.add('hide');
+  }
+</script>
+
+<script>
+  function show_new_form() {
+    console.log('show new form');
+
+    // Check if the user is logged in (you may need to adapt this based on your authentication mechanism)
+    if (isUserLoggedIn()) {
+      add_violation_elm = document.getElementById('add_violation');
+      add_violation_elm.classList.remove('hide');
+    } else {
+      console.log('User is not logged in. Cannot show new form.');
+      // You might want to handle this case, for example, by redirecting the user to the login page.
+    }
+  }
+
+  // Dummy function, replace with your actual authentication check
+  function isUserLoggedIn() {
+    var user_auth = '{{user.is_authenticated}}';
+    console.log(user_auth);
+    if (user_auth == 'True') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+</script>
+<script>
+  // get violation cost using the value from selection
+  const violationTypeSelect = document.getElementById('violation_selection');
+  const costDisplayElement = document.getElementById('costDisplay');
+
+  violationTypeSelect.addEventListener('change', () => {
+    const selectedViolation = violationTypeSelect.value;
+
+    // Get CSRF token from cookies
+    const csrfToken = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('csrftoken='))
+      .split('=')[1];
+
+    // send post request to get cost from violation selection
+    fetch('{% url "get_cost_by_violation_en" %}', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken, // Include the CSRF token in the headers
+        // Add any other headers you may need
+      },
+      body: new URLSearchParams({
+        violation_en: selectedViolation,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if ('violation_cost' in data) {
+          console.log(`Violation Cost: ${data.violation_cost}`);
+          // Update the content of the cost display element
+          costDisplayElement.textContent = `${data.violation_cost} SAR`;
+        } else {
+          console.error('Error:', data.error);
+          // Handle error, e.g., show an error message
+        }
+      })
+      .catch((error) => {
+        console.error('Fetch Error:', error);
+        // Handle fetch error, e.g., show an error message
+      });
+  });
+</script>
+<script>
+  document
+    .getElementById('selection_method')
+    .addEventListener('change', function () {
+      var selectedMethod = this.value;
+      console.log(selectedMethod);
+      // Show/hide divs based on the selected method
+      if (selectedMethod === 'excel') {
+        document.getElementById('excelDiv').classList.remove('hidden-div');
+        document.getElementById('formDiv').classList.add('hidden-div');
+      } else if (selectedMethod === 'form') {
+        document.getElementById('formDiv').classList.remove('hidden-div');
+        document.getElementById('excelDiv').classList.add('hidden-div');
+      }
+    });
+
+  // Function to show the success pop-up
+  function showSuccessPopup(status, message) {
+    var successPopup = document.getElementById('success-popup');
+    var popupMessage = document.getElementById('success-message');
+
+    popupMessage.textContent = message;
+    successPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      successPopup.classList.add('hidden');
+    }, 5000); // Adjust the delay as needed
+  }
+
+  function showFailPopup(status, message) {
+    var failPopup = document.getElementById('fail-popup');
+    var popupMessage = document.getElementById('fail-message');
+
+    popupMessage.textContent = message;
+    failPopup.classList.remove('hidden');
+
+    // Hide the pop-up after a delay (e.g., 3 seconds)
+    setTimeout(function () {
+      failPopup.classList.add('hidden');
+    }, 20000); // Adjust the delay as needed
+  }
+
+  var status = '{{status}}';
+  var message = '{{message}}';
+  if (status == 'Success') {
+    showSuccessPopup(status, message);
+  } else if (status == 'Failed') {
+    showFailPopup(status, message);
+  }
+</script>
+>>>>>>> 1679edbeb3804011354b6735043555a201abcd79

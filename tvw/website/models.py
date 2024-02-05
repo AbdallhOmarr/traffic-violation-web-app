@@ -27,3 +27,10 @@ class Violation(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, default="")
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, default="")
     pdf = models.ForeignKey(PDF, on_delete=models.CASCADE, null=True, blank=True, default="")
+
+
+class Violation_Type(models.Model):
+    violation_en = models.CharField( max_length=500)
+    violation_ar = models.CharField( max_length=500)
+    violation_cost = models.FloatField()
+    
