@@ -25,7 +25,12 @@
       {% if user.is_authenticated %}
       <li class="nav-item">
         <span class="nav-link link-body-emphasis px-2">
-          Welcome, {{ user.username }}
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+          </svg>   Welcome, {{ user.username }}
+        </div>
         </span>
       </li>
       <li class="nav-item">
@@ -43,6 +48,7 @@
     </ul>
   </div>
 </nav>
+
 <div class="hide" id="add_violation">
   <div
     class="modal modal-sheet position-fixed d-block p-4 py-md-5"
@@ -63,6 +69,148 @@
           ></button>
         </div>
 
+<<<<<<< HEAD
+        <div class="modal-body">
+          <div
+            class="d-flex flex-column justify-content-center align-items-center w-100"
+          ></div>
+                <div class="fixed-height2 w-100" id="formDiv">
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="inputbyform" value="150" />
+
+                    <div class="w-50" style="width: 30vw">
+                      <label for="formFile" class="form-label">
+                        Add new violations
+                      </label>
+                      <div class="container text-center">
+                        <div class="row">
+                          <div class="col">
+                            <div class="row">row1</div>
+                            <div class="row">row2</div>
+                          </div>
+                          <div class="col">
+                            <div class="row">row3</div>
+                            <div class="row">row4</div>
+                          </div>
+                          <div class="col">col</div>
+                        </div>
+                        <div class="row">
+                          <div class="col-8">col-8</div>
+                          <div class="col-4">col-4</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="d-flex">
+                      <div class="mb-1 w-100">
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="violation_no"
+                          placeholder="2562562560"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="d-flex flex-row">
+                      <div class="mb-3 me-3 w-100">
+                        <input
+                          type="date"
+                          class="form-control"
+                          name="date"
+                          placeholder="date"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3 w-100">
+                        <input
+                          type="time"
+                          class="form-control"
+                          name="time"
+                          placeholder="time"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="d-flex flex-row">
+                      <div class="mb-3 me-3 w-100">
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="bus_plate"
+                          placeholder="Bus Plate in Arabic Only"
+                          required
+                        />
+                      </div>
+                      <div class="mb-3 w-100">
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="amount"
+                          placeholder="Amount (SAR)"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                      <div class="form-floating mb-3 w-100">
+                        <textarea
+                          class="form-control"
+                          placeholder="Leave a comment here"
+                          id="floatingTextarea"
+                          name="violation_type_arabic"
+                          style="height: 10vh"
+                        ></textarea>
+                        <label for="floatingTextarea">
+                          Violation Type in Arabic
+                        </label>
+                      </div>
+
+                      <div class="form-floating mb-3 w-100">
+                        <textarea
+                          class="form-control"
+                          placeholder="Leave a comment here"
+                          id="floatingTextarea"
+                          name="violation_type_eng"
+                          style="height: 10vh"
+                          required
+                        ></textarea>
+                        <label for="floatingTextarea">
+                          Violation Type in English
+                        </label>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+
+                <div class="fixed-height2 hidden-div" id="excelDiv">
+                  <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="excel" value="100" />
+                    <div class="mb-3" style="width: 20vww">
+                      <label for="formFile" class="form-label">
+                        Add new violations - Select Excel file (xls or xlsx)
+                      </label>
+                      <input
+                        class="form-control"
+                        type="file"
+                        id="formFile"
+                        name="excelFile"
+                        accept=".xls, .xlsx"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+=======
         <div class="modal-body" style="">
           {% comment %}
           <div
@@ -188,12 +336,117 @@
                 Submit
               </button>
             </form>
+>>>>>>> 1679edbeb3804011354b6735043555a201abcd79
           </div>
         </div>
       </div>
+      <script>
+        console.log('hi ola');
+      </script>
+      <style></style>
+      <style>
+        #modalTour {
+          position: fixed;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .hide {
+          display: none;
+        }
+      </style>
+      <script>
+        function closeModal() {
+          add_violation_elm = document.getElementById('add_violation');
+          add_violation_elm.classList.add('hide');
+        }
+      </script>
+
+      <script>
+        function show_new_form() {
+          console.log('show new form');
+
+          // Check if the user is logged in (you may need to adapt this based on your authentication mechanism)
+          if (isUserLoggedIn()) {
+            add_violation_elm = document.getElementById('add_violation');
+            add_violation_elm.classList.remove('hide');
+          } else {
+            console.log('User is not logged in. Cannot show new form.');
+            // You might want to handle this case, for example, by redirecting the user to the login page.
+          }
+        }
+
+        // Dummy function, replace with your actual authentication check
+        function isUserLoggedIn() {
+          var user_auth = '{{user.is_authenticated}}';
+          console.log(user_auth);
+          if (user_auth == 'True') {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      </script>
+
+      <script>
+        document
+          .getElementById('selection_method')
+          .addEventListener('change', function () {
+            var selectedMethod = this.value;
+            console.log(selectedMethod);
+            // Show/hide divs based on the selected method
+            if (selectedMethod === 'excel') {
+              document
+                .getElementById('excelDiv')
+                .classList.remove('hidden-div');
+              document.getElementById('formDiv').classList.add('hidden-div');
+            } else if (selectedMethod === 'form') {
+              document.getElementById('formDiv').classList.remove('hidden-div');
+              document.getElementById('excelDiv').classList.add('hidden-div');
+            }
+          });
+
+        // Function to show the success pop-up
+        function showSuccessPopup(status, message) {
+          var successPopup = document.getElementById('success-popup');
+          var popupMessage = document.getElementById('success-message');
+
+          popupMessage.textContent = message;
+          successPopup.classList.remove('hidden');
+
+          // Hide the pop-up after a delay (e.g., 3 seconds)
+          setTimeout(function () {
+            successPopup.classList.add('hidden');
+          }, 5000); // Adjust the delay as needed
+        }
+
+        function showFailPopup(status, message) {
+          var failPopup = document.getElementById('fail-popup');
+          var popupMessage = document.getElementById('fail-message');
+
+          popupMessage.textContent = message;
+          failPopup.classList.remove('hidden');
+
+          // Hide the pop-up after a delay (e.g., 3 seconds)
+          setTimeout(function () {
+            failPopup.classList.add('hidden');
+          }, 20000); // Adjust the delay as needed
+        }
+
+        var status = '{{status}}';
+        var message = '{{message}}';
+        if (status == 'Success') {
+          showSuccessPopup(status, message);
+        } else if (status == 'Failed') {
+          showFailPopup(status, message);
+        }
+      </script>
     </div>
   </div>
 </div>
+<<<<<<< HEAD
+=======
 
 <style>
   /* Your custom CSS file or style block in your HTML file */
@@ -346,3 +599,4 @@
     showFailPopup(status, message);
   }
 </script>
+>>>>>>> 1679edbeb3804011354b6735043555a201abcd79

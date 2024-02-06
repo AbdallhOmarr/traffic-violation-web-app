@@ -1,4 +1,5 @@
 {% extends 'base.html' %} {% block content %}
+
 <div class="container">
   {% comment %} success and fail message {% endcomment %}
   <div class="popup-container hidden" id="success-popup">
@@ -13,675 +14,796 @@
       <p id="fail-message"></p>
     </div>
   </div>
-  {% comment %} success and fail message {% endcomment %}
+  {% comment %} success and fail message {% endcomment %} {% comment %} ola
+  start {% endcomment %}
 
-  <div class="fixed-height overflow-y-scroll">
-    <table class="table table-hover">
-      <thead class="sticky-top">
-        <tr class="">
-          <th scope="col" class="small-text violation_no">Violation No.</th>
-          <th scope="col" class="small-text date">Date</th>
-          <th scope="col" class="small-text timing">Timing</th>
-          <th scope="col" class="small-text violation_plate">Vehicle Plate</th>
-          <th scope="col" class="small-text fleet">Fleet</th>
-
-          <th scope="col" class="small-text vehicle_user">Vehicle User</th>
-          <th scope="col" class="small-text violation_type">Violation Type</th>
-          <th scope="col" class="small-text ptc_id">PTC ID</th>
-          <th scope="col" class="small-text whatsapp"></th>
-          <th scope="col" class="small-text print"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for violation in violations %}
-        <tr
-          onclick="sendPostRequest('{{ violation.violation_id }}','{{violation.employee.ptc_id}}','{{violation.violation_type}}')"
-          class="{% if violation.employee and not violation.pdf %}table-warning{% elif violation.pdf %}table-success{% endif %}"
-          id="row-{{violation.violation_id}}"
+  <div class="row d-flex">
+    <div id="left_pan" class="col-md-1 ms-5">
+      <button id="" type="button" class="btn">+</button>
+      <button type="button" class="btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-upload"
+          viewBox="0 0 16 16"
         >
-          <td class="small-text">{{ violation.violation_id }}</td>
-          <td class="small-text">{{ violation.date }}</td>
-          <td class="small-text">{{ violation.time|time:"H:i" }}</td>
-          <td class="small-text">{{ violation.plate_eng }}</td>
-          <td class="small-text">{{violation.fleet_no}}</td>
-          <td class="small-text">{{ violation.vehicle_user}}</td>
-          <td class="small-text">{{ violation.violation_type }}</td>
-          <td class="small-text" id="row-td-{{violation.violation_id}}">
-            <select
-              class="form-control form-control-sm employee-ptc-select"
-              name="employee_ptc"
-              id="employee_ptc_{{ violation.violation_id }}"
-              style="width=100%"
-              onchange="handleSelectChange('{{ violation.violation_id }}')"
-            >  <option value="" {% if not violation.ptc_id %}selected{% endif %}></option>
-
-              {% for employee_ptc in employees_ptc %}
-              <option name="ptc_id" value="{{ employee_ptc }}" {% if employee_ptc == violation.ptc_id %}selected{% endif %}>
-                {{ employee_ptc }}
-              </option>
-              {% endfor %}
-            </select>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-success shadow btn-sm rounded-5"
-            >
-              <div class="d-flex justify-content-center align-items-center">
-                <span class="me-1">Whatsapp</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  class="bi bi-whatsapp"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"
-                  ></path>
-                </svg>
-              </div>
-            </button>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-light shadow btn-sm rounded-5"
-              onclick="print_doc('{{ violation.violation_id }}')"
-            >
-              <div class="d-flex justify-content-center align-items-center">
-                <span class="me-1">Print</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  class="bi bi-printer-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1"
-                  />
-                  <path
-                    d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"
-                  />
-                </svg>
-              </div>
-            </button>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <div class="d-flex justify-content-center">
-    <form id="exportForm" action="{% url 'export_violations' %}" method="post">
-      {% csrf_token %}
-      <div class="mt-2 fixed-width1">
-        <div class="d-flex justify-content-center">
-          <label for="" class="text-center">Export violations to Excel</label>
-        </div>
-        <div class="d-flex justify-content-center">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm w-100"
-            onclick="exportViolations()"
-          >
-            Download
-          </button>
-        </div>
+          <path
+            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"
+          />
+          <path
+            d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      id="middle_pan"
+      class="col-md-10 d-flex justify-content-center flex-wrap"
+    >
+      <div class="row m-1">
+        <button type="button" class="btn m-2">East Depot</button>
+        <button type="button" class="btn m-2">occ</button>
       </div>
-    </form>
-  </div>
-</div>
-{% comment %}
-<div class="hidden" id="employeDiv">
-  <div class="popup-container-employee" id="success-popup">
-    <div class="popup-content">
-      <div class="card p-3" style="width: 35vw">
-        <span
-          onclick="closeEmpDiv();"
-          class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-2"
-        >
-          <span class="visually-hidden">unread messages</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-x-lg"
-            viewBox="0 0 16 16"
-          >
-            <path
-              d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
-            />
-          </svg>
-        </span>
+      <div class="row m-1">
+        <button type="button" class="btn m-2">West Depot</button>
+        <button type="button" class="btn m-2">Sales & Marketing</button>
+      </div>
+      <div class="row m-1">
+        <button type="button" class="btn m-2">Fm Department</button>
+        <button type="button" class="btn m-2">Training</button>
+      </div>
+    </div>
+    <div class="<div" id="" class="row d-flex justify-content-center">
+      <div id="center_pan" class="col-md-1">
+        <button type="button" class="btn m-2">Home</button>
+        <button type="button" class="btn m-2">Dashboard</button>
+        <button type="button" class="btn m-2">Excluded</button>
+      </div>
 
-        <form onsubmit="return false;">
-          {% csrf_token %}
-          <div class="mb-3">
-            <div class="d-flex mb-3 justify-content-center">
-              <label for="" class="form-label" style="width: 30%">
-                Violation No.:
-              </label>
-              <input
-                type="text"
-                id="violation_no"
-                name="violation_no"
-                class="form-control form-control-sm"
-                placeholder="Disabled input"
-                disabled
-              />
+      {% comment %} end ola {% endcomment %}
+      <div id="table_pan" class="col-md-10 ms-3">
+        <div class="fixed-height overflow-y-scroll">
+          <table class="table table-hover">
+            <thead class="sticky-top">
+              <tr class="">
+                <th scope="col" class="small-text violation_no">
+                  Violation No.
+                </th>
+                <th scope="col" class="small-text date">Date</th>
+                <th scope="col" class="small-text timing">Timing</th>
+                <th scope="col" class="small-text violation_plate">
+                  Vehicle Plate
+                </th>
+                <th scope="col" class="small-text fleet">Fleet</th>
 
-              <input
-                type="hidden"
-                name="violation_no_hidden"
-                id="violation_no_hidden"
-              />
-            </div>
-            <div class="d-flex mb-3 justify-content-center">
-              <label for="" class="form-label" style="width: 30%">
-                Employee PTC ID:
-              </label>
-              <select
-                class="form-control"
-                name="employee_ptc"
-                id="employee_ptc"
-                style="width: 100%"
+                <th scope="col" class="small-text vehicle_user">
+                  Vehicle User
+                </th>
+                <th scope="col" class="small-text violation_type">
+                  Violation Type
+                </th>
+                <th scope="col" class="small-text ptc_id">PTC ID</th>
+                <th scope="col" class="small-text whatsapp"></th>
+                <th scope="col" class="small-text print"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for violation in violations %}
+              <tr
+                onclick="sendPostRequest('{{ violation.violation_id }}','{{violation.employee.ptc_id}}','{{violation.violation_type}}')"
+                class="{% if violation.employee and not violation.pdf %}table-warning{% elif violation.pdf %}table-success{% endif %}"
+                id="row-{{violation.violation_id}}"
               >
-                {% for employee_ptc in employees_ptc %}
-                <option name="ptc_id" value="{{ employee_ptc }}">
-                  {{ employee_ptc }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="d-flex mb-3 justify-content-center">
-              <label for="" class="form-label" style="width: 30%">
-                Employee Name:
-              </label>
+                <td class="small-text">{{ violation.violation_id }}</td>
+                <td class="small-text">{{ violation.date }}</td>
+                <td class="small-text">{{ violation.time|time:"H:i" }}</td>
+                <td class="small-text">{{ violation.plate_eng }}</td>
+                <td class="small-text">{{violation.fleet_no}}</td>
+                <td class="small-text">{{ violation.vehicle_user}}</td>
+                <td class="small-text">{{ violation.violation_type }}</td>
+                <td class="small-text" id="row-td-{{violation.violation_id}}">
+                  <select
+                    class="form-control form-control-sm employee-ptc-select"
+                    name="employee_ptc"
+                    id="employee_ptc_{{ violation.violation_id }}"
+                    style="width=100%"
+                    onchange="handleSelectChange('{{ violation.violation_id }}')"
+                  >
+                    <option
+                      value=""
+                      {%
+                      if
+                      not
+                      violation.ptc_id
+                      %}selected{%
+                      endif
+                      %}
+                    ></option>
 
-              <input
-                type="text"
-                id="employee_name_id"
-                name="employee_name"
-                class="form-control form-control-sm"
-                placeholder=""
-                disabled
-              />
+                    {% for employee_ptc in employees_ptc %}
+                    <option
+                      name="ptc_id"
+                      value="{{ employee_ptc }}"
+                      {%
+                      if
+                      employee_ptc="violation.ptc_id"
+                      %}selected{%
+                      endif
+                      %}
+                    >
+                      {{ employee_ptc }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-success shadow btn-sm rounded-5"
+                  >
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <span class="me-1">Whatsapp</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-whatsapp"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"
+                        ></path>
+                      </svg>
+                    </div>
+                  </button>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-light shadow btn-sm rounded-5"
+                    onclick="print_doc('{{ violation.violation_id }}')"
+                  >
+                    <div
+                      class="d-flex justify-content-center align-items-center"
+                    >
+                      <span class="me-1">Print</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-printer-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1"
+                        />
+                        <path
+                          d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-center">
+          <form
+            id="exportForm"
+            action="{% url 'export_violations' %}"
+            method="post"
+          >
+            {% csrf_token %}
+            <div class="mt-2 fixed-width1">
+              <div class="d-flex justify-content-center">
+                <label for="" class="text-center">
+                  Export violations to Excel
+                </label>
+              </div>
+              <div class="d-flex justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm w-100"
+                  onclick="exportViolations()"
+                >
+                  Download
+                </button>
+              </div>
             </div>
-            <div class="d-flex mb-3 justify-content-center">
-              <label for="" class="form-label" style="width: 30%">
-                ID Number:
-              </label>
-
-              <input
-                type="text"
-                id="id_number"
-                name="id_number"
-                class="form-control form-control-sm"
-                placeholder=""
-                disabled
-              />
-            </div>
-          </div>
-          <div class="d-flex mb-3 justify-content-center">
-            <button
-              type=""
-              class="btn btn-primary btn-sm w-100"
-              onclick="sendPTC();"
-            >
-              Assign
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-{% endcomment %} {% comment %}
-<div class="hidden" id="pdfDiv">
-  <div class="popup-container-employee" id="success-popup">
-    <div class="popup-content">
-      <!-- Add a close button (x icon) -->
-
-      <div class="card p-3" style="width: 35vw">
-        <div class="flex-row"></div>
-        <span
-          onclick="closePdfDiv();"
-          class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-2"
-        >
-          <span class="visually-hidden">unread messages</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-x-lg"
-            viewBox="0 0 16 16"
+  {% comment %}
+  <div class="hidden" id="employeDiv">
+    <div class="popup-container-employee" id="success-popup">
+      <div class="popup-content">
+        <div class="card p-3" style="width: 35vw">
+          <span
+            onclick="closeEmpDiv();"
+            class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-2"
           >
-            <path
-              d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
-            />
-          </svg>
-        </span>
-        <div class="flex-row">
-          <div class="d-flex">
-            <div class="flex-row w-50 me-3 justify-content-center">
-              <label for="" class="form-label">Violation No.:</label>
-              <input
-                type="text"
-                id="violation_no_pdf"
-                class="form-control form-control-sm"
-                placeholder="Disabled input"
-                disabled
-              />
-            </div>
-
-            <div class="flex-row w-50 justify-content-center">
-              <label for="" class="form-label">PTC ID:</label>
-
-              <input
-                type="text"
-                id="ptc_id_pdf"
-                class="form-control form-control-sm"
-                placeholder="Disabled input"
-                disabled
-              />
-            </div>
-          </div>
-          <div class="flex-row w-100 mb-2 justify-content-center">
-            <label for="">Employee Name:</label>
-            <input
-              type="text"
-              id="employee_name_pdf"
-              class="form-control form-control-sm"
-              placeholder="Disabled input"
-              disabled
-            />
-          </div>
-          <div class="flex-row mb-2 justify-content-center">
-            <label for="">ID Number</label>
-            <input
-              type="text"
-              id="id_number_pdf"
-              class="form-control form-control-sm"
-              placeholder="Disabled input"
-              disabled
-            />
-          </div>
-          <div class="flex-row w-100 mb-2 justify-content-center">
-            <label for="">Violation Type</label>
-            <input
-              type="text"
-              id="violation_type_pdf"
-              class="form-control form-control-sm"
-              placeholder="Disabled input"
-              disabled
-            />
-          </div>
-          <div class="flex-row mb-2">
-            <button
-              type=""
-              onclick="print_doc()"
-              class="btn btn-secondary w-100"
+            <span class="visually-hidden">unread messages</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-x-lg"
+              viewBox="0 0 16 16"
             >
-              Print Employee document
-            </button>
-          </div>
-          <div class="flex-row">
-            <form enctype="multipart/form-data" id="myForm">
-              {% csrf_token %}
-              <div class="mb-3">
-                <label for="formFile" class="form-label">
-                  Upload Document in pdf
+              <path
+                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+              />
+            </svg>
+          </span>
+
+          <form onsubmit="return false;">
+            {% csrf_token %}
+            <div class="mb-3">
+              <div class="d-flex mb-3 justify-content-center">
+                <label for="" class="form-label" style="width: 30%">
+                  Violation No.:
                 </label>
                 <input
-                  class="form-control"
-                  type="file"
-                  id="formFile"
-                  name="pdfFile"
-                  accept=".pdf"
-                  required
+                  type="text"
+                  id="violation_no"
+                  name="violation_no"
+                  class="form-control form-control-sm"
+                  placeholder="Disabled input"
+                  disabled
                 />
-                <input type="hidden" name="pdf" value="15" />
+
                 <input
                   type="hidden"
-                  name="violation_no"
-                  id="violation_no_hidden_pdf"
-                  value="{{violation.violation_id}}"
+                  name="violation_no_hidden"
+                  id="violation_no_hidden"
                 />
               </div>
+              <div class="d-flex mb-3 justify-content-center">
+                <label for="" class="form-label" style="width: 30%">
+                  Employee PTC ID:
+                </label>
+                <select
+                  class="form-control"
+                  name="employee_ptc"
+                  id="employee_ptc"
+                  style="width: 100%"
+                >
+                  {% for employee_ptc in employees_ptc %}
+                  <option name="ptc_id" value="{{ employee_ptc }}">
+                    {{ employee_ptc }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="d-flex mb-3 justify-content-center">
+                <label for="" class="form-label" style="width: 30%">
+                  Employee Name:
+                </label>
+
+                <input
+                  type="text"
+                  id="employee_name_id"
+                  name="employee_name"
+                  class="form-control form-control-sm"
+                  placeholder=""
+                  disabled
+                />
+              </div>
+              <div class="d-flex mb-3 justify-content-center">
+                <label for="" class="form-label" style="width: 30%">
+                  ID Number:
+                </label>
+
+                <input
+                  type="text"
+                  id="id_number"
+                  name="id_number"
+                  class="form-control form-control-sm"
+                  placeholder=""
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="d-flex mb-3 justify-content-center">
               <button
-                type="button"
-                onclick="submitForm()"
-                class="btn btn-primary w-100"
+                type=""
+                class="btn btn-primary btn-sm w-100"
+                onclick="sendPTC();"
               >
-                Submit
+                Assign
               </button>
-            </form>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endcomment %} {% comment %}
+  <div class="hidden" id="pdfDiv">
+    <div class="popup-container-employee" id="success-popup">
+      <div class="popup-content">
+        <!-- Add a close button (x icon) -->
+
+        <div class="card p-3" style="width: 35vw">
+          <div class="flex-row"></div>
+          <span
+            onclick="closePdfDiv();"
+            class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger p-2"
+          >
+            <span class="visually-hidden">unread messages</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-x-lg"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+              />
+            </svg>
+          </span>
+          <div class="flex-row">
+            <div class="d-flex">
+              <div class="flex-row w-50 me-3 justify-content-center">
+                <label for="" class="form-label">Violation No.:</label>
+                <input
+                  type="text"
+                  id="violation_no_pdf"
+                  class="form-control form-control-sm"
+                  placeholder="Disabled input"
+                  disabled
+                />
+              </div>
+
+              <div class="flex-row w-50 justify-content-center">
+                <label for="" class="form-label">PTC ID:</label>
+
+                <input
+                  type="text"
+                  id="ptc_id_pdf"
+                  class="form-control form-control-sm"
+                  placeholder="Disabled input"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="flex-row w-100 mb-2 justify-content-center">
+              <label for="">Employee Name:</label>
+              <input
+                type="text"
+                id="employee_name_pdf"
+                class="form-control form-control-sm"
+                placeholder="Disabled input"
+                disabled
+              />
+            </div>
+            <div class="flex-row mb-2 justify-content-center">
+              <label for="">ID Number</label>
+              <input
+                type="text"
+                id="id_number_pdf"
+                class="form-control form-control-sm"
+                placeholder="Disabled input"
+                disabled
+              />
+            </div>
+            <div class="flex-row w-100 mb-2 justify-content-center">
+              <label for="">Violation Type</label>
+              <input
+                type="text"
+                id="violation_type_pdf"
+                class="form-control form-control-sm"
+                placeholder="Disabled input"
+                disabled
+              />
+            </div>
+            <div class="flex-row mb-2">
+              <button
+                type=""
+                onclick="print_doc()"
+                class="btn btn-secondary w-100"
+              >
+                Print Employee document
+              </button>
+            </div>
+            <div class="flex-row">
+              <form enctype="multipart/form-data" id="myForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="formFile" class="form-label">
+                    Upload Document in pdf
+                  </label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    id="formFile"
+                    name="pdfFile"
+                    accept=".pdf"
+                    required
+                  />
+                  <input type="hidden" name="pdf" value="15" />
+                  <input
+                    type="hidden"
+                    name="violation_no"
+                    id="violation_no_hidden_pdf"
+                    value="{{violation.violation_id}}"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onclick="submitForm()"
+                  class="btn btn-primary w-100"
+                >
+                  Submit
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endcomment %}
-<script>
-  {% if messages %}
-      {% for message in messages %}
-          var msg = "{{message}}"
-          if(msg == "sucess"){
-            showSuccessPopup('success',"Violation submitted successfully!")
-          }
-          else{
-            showFailPopup('fail',"Violation no. Duplicated")
-          }
-      {% endfor %}
-  {% endif %}
-</script>
-<form id="ptc-form">{% csrf_token %}</form>
+  {% endcomment %}
+  <script>
+    {% if messages %}
+        {% for message in messages %}
+            var msg = "{{message}}"
+            if(msg == "sucess"){
+              showSuccessPopup('success',"Violation submitted successfully!")
+            }
+            else{
+              showFailPopup('fail',"Violation no. Duplicated")
+            }
+        {% endfor %}
+    {% endif %}
+  </script>
+  <form id="ptc-form">{% csrf_token %}</form>
 
-<script>
-  // submit post request to download document
-  function print_doc(violation_id) {
-    const csrfToken = '{{ csrf_token }}';
+  <script>
+    // submit post request to download document
+    function print_doc(violation_id) {
+      const csrfToken = '{{ csrf_token }}';
 
-    fetch('/print-violation', {
-      method: 'POST',
-      body: JSON.stringify({ violation_no: violation_id }),
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.blob(); // Convert the response to a Blob
-      })
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-
-        // Create a temporary <a> element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${violation_id}_violation_report.docx`;
-        document.body.appendChild(a);
-        a.click();
-
-        // Remove the temporary <a> element
-        document.body.removeChild(a);
-
-        // Release the Object URL to free up resources
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        // Handle the error appropriately, e.g., display an error message to the user
-      });
-  }
-</script>
-
-<script>
-  function submitForm() {
-    // Get form element
-    var form = document.getElementById('myForm');
-
-    // Create FormData object and append form data
-    var formData = new FormData(form);
-    const csrfToken = '{{csrf_token}}';
-
-    // Fetch POST request
-    fetch('/assign_employee', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRFToken': csrfToken, // Include CSRF token in headers
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Success:', data);
-        // Handle success, if needed
-        if (data['status'] == 'Success') {
-          showSuccessPopup(data['status'], data['message']);
-          pdfDiv = document.getElementById('pdfDiv');
-          pdfDiv.classList.add('hidden');
-          violation_id_label = document.getElementById('violation_no_pdf');
-
-          tr_row_elm = document.getElementById(
-            'row-' + violation_id_label.value,
-          );
-          tr_row_elm.classList.remove('table-warning');
-          tr_row_elm.classList.add('table-success');
-
-          //          location.reload();
-        } else if (data['status'] == 'Failed') {
-          showFailPopup(data['status'], data['message']);
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        // Handle errors, if needed
-      });
-  }
-</script>
-<script>
-  {% comment %}
-   // JavaScript function to close the pdfDiv
-  function closePdfDiv() {
-    document.getElementById('pdfDiv').classList.add('hidden');
-  }
-   {% endcomment %}
-</script>
-<script>
-  {% comment %} // JavaScript function to close the pdfDiv
-  function closeEmpDiv() {
-    document.getElementById('employeDiv').classList.add('hidden');
-  } {% endcomment %}
-</script>
-
-<script>
-  // Function to show the success pop-up
-  function showSuccessPopup(status, message) {
-    var successPopup = document.getElementById('success-popup');
-    var popupMessage = document.getElementById('success-message');
-
-    popupMessage.textContent = message;
-    successPopup.classList.remove('hidden');
-
-    // Hide the pop-up after a delay (e.g., 3 seconds)
-    setTimeout(function () {
-      successPopup.classList.add('hidden');
-    }, 1000); // Adjust the delay as needed
-  }
-
-  function showFailPopup(status, message) {
-    var failPopup = document.getElementById('fail-popup');
-    var popupMessage = document.getElementById('fail-message');
-
-    popupMessage.textContent = message;
-    failPopup.classList.remove('hidden');
-
-    // Hide the pop-up after a delay (e.g., 3 seconds)
-    setTimeout(function () {
-      failPopup.classList.add('hidden');
-    }, 1000); // Adjust the delay as needed
-  }
-</script>
-
-<script>
-  // this function to send post request with ptc id & violation id
-  function sendPTC(violation_id, ptc_id) {
-    const csrfToken = '{{csrf_token}}';
-    const apiUrl = '/assign_employee';
-    fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      body: JSON.stringify({ ptc_id: ptc_id, violation_id: violation_id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        //employeDiv = document.getElementById('employeDiv');
-        //employeDiv.classList.add('hidden');
-        tr_row_elm = document.getElementById('row-' + violation_id);
-        tr_row_elm.classList.add('table-warning');
-
-        if (data['status'] == 'Success') {
-          showSuccessPopup(data['status'], data['message']);
-          //          location.reload();
-        } else if (data['status'] == 'Failed') {
-          showFailPopup(data['status'], data['message']);
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
-</script>
-<script>
-  // this script  to change employee data when changing the ptc id
-  $(document).ready(function () {
-    // Initialize Select2
-    $('#employee_ptc').select2();
-
-    // Listen for Select2 select event
-    $('#employee_ptc').on('select2:select', function (e) {
-      var selectedValue = e.params.data.id;
-      console.log('Selected value:', selectedValue);
-      // Replace 'your_csrf_token' with the actual CSRF token if needed
-      const csrfToken = '{{csrf_token}}';
-
-      // Replace 'your_url' with the actual URL of the "get-employee" view
-      const apiUrl = '/get-employee';
-      var ptcId = this.value;
-
-      fetch(apiUrl, {
+      fetch('/print-violation', {
         method: 'POST',
+        body: JSON.stringify({ violation_no: violation_id }),
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
         },
-        body: JSON.stringify({ ptc_id: ptcId }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob(); // Convert the response to a Blob
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+
+          // Create a temporary <a> element to trigger the download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${violation_id}_violation_report.docx`;
+          document.body.appendChild(a);
+          a.click();
+
+          // Remove the temporary <a> element
+          document.body.removeChild(a);
+
+          // Release the Object URL to free up resources
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          // Handle the error appropriately, e.g., display an error message to the user
+        });
+    }
+  </script>
+
+  <script>
+    function submitForm() {
+      // Get form element
+      var form = document.getElementById('myForm');
+
+      // Create FormData object and append form data
+      var formData = new FormData(form);
+      const csrfToken = '{{csrf_token}}';
+
+      // Fetch POST request
+      fetch('/assign_employee', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': csrfToken, // Include CSRF token in headers
+        },
       })
         .then((response) => response.json())
         .then((data) => {
-          var employee_name_element =
-            document.getElementById('employee_name_id');
-          employee_name_element.value = data['employee_name'];
-          var IDnumber_element = document.getElementById('id_number');
-          IDnumber_element.value = data['ID_number'];
+          console.log('Success:', data);
+          // Handle success, if needed
+          if (data['status'] == 'Success') {
+            showSuccessPopup(data['status'], data['message']);
+            pdfDiv = document.getElementById('pdfDiv');
+            pdfDiv.classList.add('hidden');
+            violation_id_label = document.getElementById('violation_no_pdf');
+
+            tr_row_elm = document.getElementById(
+              'row-' + violation_id_label.value,
+            );
+            tr_row_elm.classList.remove('table-warning');
+            tr_row_elm.classList.add('table-success');
+
+            //          location.reload();
+          } else if (data['status'] == 'Failed') {
+            showFailPopup(data['status'], data['message']);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          // Handle errors, if needed
+        });
+    }
+  </script>
+  <script>
+    {% comment %}
+     // JavaScript function to close the pdfDiv
+    function closePdfDiv() {
+      document.getElementById('pdfDiv').classList.add('hidden');
+    }
+     {% endcomment %}
+  </script>
+  <script>
+    {% comment %} // JavaScript function to close the pdfDiv
+    function closeEmpDiv() {
+      document.getElementById('employeDiv').classList.add('hidden');
+    } {% endcomment %}
+  </script>
+
+  <script>
+    // Function to show the success pop-up
+    function showSuccessPopup(status, message) {
+      var successPopup = document.getElementById('success-popup');
+      var popupMessage = document.getElementById('success-message');
+
+      popupMessage.textContent = message;
+      successPopup.classList.remove('hidden');
+
+      // Hide the pop-up after a delay (e.g., 3 seconds)
+      setTimeout(function () {
+        successPopup.classList.add('hidden');
+      }, 1000); // Adjust the delay as needed
+    }
+
+    function showFailPopup(status, message) {
+      var failPopup = document.getElementById('fail-popup');
+      var popupMessage = document.getElementById('fail-message');
+
+      popupMessage.textContent = message;
+      failPopup.classList.remove('hidden');
+
+      // Hide the pop-up after a delay (e.g., 3 seconds)
+      setTimeout(function () {
+        failPopup.classList.add('hidden');
+      }, 1000); // Adjust the delay as needed
+    }
+  </script>
+
+  <script>
+    // this function to send post request with ptc id & violation id
+    function sendPTC(violation_id, ptc_id) {
+      const csrfToken = '{{csrf_token}}';
+      const apiUrl = '/assign_employee';
+      fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ ptc_id: ptc_id, violation_id: violation_id }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          //employeDiv = document.getElementById('employeDiv');
+          //employeDiv.classList.add('hidden');
+          tr_row_elm = document.getElementById('row-' + violation_id);
+          tr_row_elm.classList.add('table-warning');
+
+          if (data['status'] == 'Success') {
+            showSuccessPopup(data['status'], data['message']);
+            //          location.reload();
+          } else if (data['status'] == 'Failed') {
+            showFailPopup(data['status'], data['message']);
+          }
         })
         .catch((error) => {
           console.error('Error:', error);
         });
+    }
+  </script>
+  <script>
+    // this script  to change employee data when changing the ptc id
+    $(document).ready(function () {
+      // Initialize Select2
+      $('#employee_ptc').select2();
+
+      // Listen for Select2 select event
+      $('#employee_ptc').on('select2:select', function (e) {
+        var selectedValue = e.params.data.id;
+        console.log('Selected value:', selectedValue);
+        // Replace 'your_csrf_token' with the actual CSRF token if needed
+        const csrfToken = '{{csrf_token}}';
+
+        // Replace 'your_url' with the actual URL of the "get-employee" view
+        const apiUrl = '/get-employee';
+        var ptcId = this.value;
+
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          body: JSON.stringify({ ptc_id: ptcId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            var employee_name_element =
+              document.getElementById('employee_name_id');
+            employee_name_element.value = data['employee_name'];
+            var IDnumber_element = document.getElementById('id_number');
+            IDnumber_element.value = data['ID_number'];
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      });
     });
-  });
-</script>
-<script>
-  function checkptc(ptc_id) {
-    if (ptc_id.trim() == '') {
-      console.log('ptc is empty');
-      return true;
-    } else {
-      console.log('ptc is not empty');
-      return false;
+  </script>
+  <script>
+    function checkptc(ptc_id) {
+      if (ptc_id.trim() == '') {
+        console.log('ptc is empty');
+        return true;
+      } else {
+        console.log('ptc is not empty');
+        return false;
+      }
     }
-  }
-</script>
-<script>
-  //view pdfDiv
+  </script>
+  <script>
+    //view pdfDiv
 
-  function sendPostRequest(violationID, ptc_id, violation_type) {
-    pdfDiv = document.getElementById('pdfDiv');
-    employeDiv = document.getElementById('employeDiv');
-    ptc_id_element = document.getElementById('row-td-' + violationID);
-    console.log(ptc_id_element);
-    checkptc(ptc_id_element.textContent);
+    function sendPostRequest(violationID, ptc_id, violation_type) {
+      pdfDiv = document.getElementById('pdfDiv');
+      employeDiv = document.getElementById('employeDiv');
+      ptc_id_element = document.getElementById('row-td-' + violationID);
+      console.log(ptc_id_element);
+      checkptc(ptc_id_element.textContent);
 
-    if (checkptc(ptc_id_element.textContent)) {
-      employeDiv.classList.remove('hidden');
-      pdfDiv.classList.add('hidden');
+      if (checkptc(ptc_id_element.textContent)) {
+        employeDiv.classList.remove('hidden');
+        pdfDiv.classList.add('hidden');
 
-      violation_id_label = document.getElementById('violation_no');
-      violation_id_label.value = violationID;
-      violation_id_input = document.getElementById('violation_no_hidden');
-      violation_id_input.value = violationID;
-    } else {
-      pdfDiv.classList.remove('hidden');
-      employeDiv.classList.add('hidden');
+        violation_id_label = document.getElementById('violation_no');
+        violation_id_label.value = violationID;
+        violation_id_input = document.getElementById('violation_no_hidden');
+        violation_id_input.value = violationID;
+      } else {
+        pdfDiv.classList.remove('hidden');
+        employeDiv.classList.add('hidden');
 
-      violation_id_label = document.getElementById('violation_no_pdf');
-      violation_id_label.value = violationID;
-      violation_id_input = document.getElementById('violation_no_hidden_pdf');
-      violation_id_input.value = violationID;
-      violation_type_elem = document.getElementById('violation_type_pdf');
-      violation_type_elem.value = violation_type;
-      ptc_id_pdf_elm = document.getElementById('ptc_id_pdf');
-      ptc_id_pdf_elm.value = ptc_id_element.textContent.trim();
+        violation_id_label = document.getElementById('violation_no_pdf');
+        violation_id_label.value = violationID;
+        violation_id_input = document.getElementById('violation_no_hidden_pdf');
+        violation_id_input.value = violationID;
+        violation_type_elem = document.getElementById('violation_type_pdf');
+        violation_type_elem.value = violation_type;
+        ptc_id_pdf_elm = document.getElementById('ptc_id_pdf');
+        ptc_id_pdf_elm.value = ptc_id_element.textContent.trim();
 
-      const csrfToken = '{{csrf_token}}';
+        const csrfToken = '{{csrf_token}}';
 
-      // Replace 'your_url' with the actual URL of the "get-employee" view
-      const apiUrl = '/get-employee';
+        // Replace 'your_url' with the actual URL of the "get-employee" view
+        const apiUrl = '/get-employee';
 
-      fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({ ptc_id: ptc_id_element.textContent.trim() }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          var employee_name_element =
-            document.getElementById('employee_name_pdf');
-          employee_name_element.value = data['employee_name'];
-          var IDnumber_element = document.getElementById('id_number_pdf');
-          IDnumber_element.value = data['ID_number'];
-          // tr_row_elm = document.getElementById('row-' + violation_id);
-          // tr_row_elm.classList.add('table-warning');
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          body: JSON.stringify({ ptc_id: ptc_id_element.textContent.trim() }),
         })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            var employee_name_element =
+              document.getElementById('employee_name_pdf');
+            employee_name_element.value = data['employee_name'];
+            var IDnumber_element = document.getElementById('id_number_pdf');
+            IDnumber_element.value = data['ID_number'];
+            // tr_row_elm = document.getElementById('row-' + violation_id);
+            // tr_row_elm.classList.add('table-warning');
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
     }
-  }
-</script>
+  </script>
 
-<script>
-  function exportViolations() {
-    // Submit the form using JavaScript
-    document.getElementById('exportForm').submit();
-  }
-</script>
-<script>
-  $(document).ready(function () {
-    $('.employee-ptc-select').select2();
-  });
-</script>
+  <script>
+    function exportViolations() {
+      // Submit the form using JavaScript
+      document.getElementById('exportForm').submit();
+    }
+  </script>
+  <script>
+    $(document).ready(function () {
+      $('.employee-ptc-select').select2();
+    });
+  </script>
 
-<script>
-  function handleSelectChange(violation_id) {
-    // Get the selected value from the dropdown
-    const selectedValue = document.getElementById(
-      `employee_ptc_${violation_id}`,
-    ).value;
+  <script>
+    function handleSelectChange(violation_id) {
+      // Get the selected value from the dropdown
+      const selectedValue = document.getElementById(
+        `employee_ptc_${violation_id}`,
+      ).value;
 
-    // Call your function with the violation_id and selectedValue
-    sendPTC(violation_id, selectedValue);
-  }
+      // Call your function with the violation_id and selectedValue
+      sendPTC(violation_id, selectedValue);
+    }
 
-  // Your existing sendPTC function here...
-</script>
+    // Your existing sendPTC function here...
+  </script>
+  <style>
+    #middle_pan button {
+      color: black;
 
-{% endblock %}
+      background-color: #f3fde8;
+      border-radius: 20px;
+    }
+    #middle_pan button:hover {
+      background-color: #c5e898;
+    }
+
+    #left_pan button {
+      color: black;
+      background-color: #f3fde8;
+      border-radius: 20px;
+    }
+    #left_pan button:hover {
+      background-color: #c5e898;
+    }
+
+    #center_pan button {
+      color: black;
+      background-color: #f3fde8;
+      border-radius: 20px;
+    }
+    #center_pan button:hover {
+      background-color: #c5e898;
+    }
+    #center_pan {
+    }
+
+    #table_pan {
+    }
+  </style>
+  {% endblock %}
+</div>
