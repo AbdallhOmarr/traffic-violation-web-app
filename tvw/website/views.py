@@ -114,10 +114,16 @@ def view_violation(request):
             date = request.POST.get("date")
             time = request.POST.get("time")
             bus_plate = request.POST.get("bus_plate")
-            amount = request.POST.get("amount")
-            violation_type_arabic  = request.POST.get("violation_type_arabic")
-            violation_type_english  = request.POST.get("violation_type_eng")
             
+            
+            
+            violation_type_en = request.POST.get("violation_en")
+            ## violation type
+            violation_type = Violation_Type.objects.get(violation_en=violation_type_en)
+
+            amount = violation_type.violation_cost
+            violation_type_arabic  = violation_type.violation_ar
+            violation_type_english  = violation_type.violation_en
 
             # Create a Violation instance
             try:
@@ -324,6 +330,7 @@ def add_violations(request):
         try:
             
             violation_no = request.POST.get('violation_no')
+            print(f"violation_no:{violation_no}")
                             # Check if a Violation with the given violation_id already exists
             if Violation.objects.filter(violation_id=violation_no).exists():
                 context = {'status': 'Failed', 'message': f'Violation No. Duplicated'}
@@ -332,10 +339,13 @@ def add_violations(request):
             date = request.POST.get("date")
             time = request.POST.get("time")
             bus_plate = request.POST.get("bus_plate")
-            amount = request.POST.get("amount")
-            violation_type_arabic  = request.POST.get("violation_type_arabic")
-            violation_type_english  = request.POST.get("violation_type_eng")
-            
+            violation_type_en = request.POST.get("violation_en")
+            ## violation type
+            violation_type = Violation_Type.objects.get(violation_en=violation_type_en)
+            print(f"date:{date}")
+            print(f"time:{time}")
+            print(f"violation_type_en:{violation_type_en}")
+            print(f"bus plate:{bus_plate}")
 
             # Create a Violation instance
             try:
@@ -349,9 +359,9 @@ def add_violations(request):
                 date=date,
                 time=time,
                 vehicle=vehicle,
-                amount=amount,
-                violation_type=violation_type_english,
-                violation_type_arabic=violation_type_arabic,
+                amount=violation_type.violation_cost,
+                violation_type=violation_type.violation_en,
+                violation_type_arabic=violation_type.violation_ar,
                 )
 
                 violation_instance.save()
@@ -507,8 +517,10 @@ def print_document(request):
 @login_required(login_url='home')
 def get_cost_by_violation_en(request):
     if request.method == 'POST':
-        violation_en = request.POST.get('violation_en', None)
-
+        print("post req")
+        data = json.loads(request.body)
+        violation_en = data.get('violation_en', None)
+        print(violation_en)
         if violation_en:
             try:
                 violation = Violation_Type.objects.get(violation_en=violation_en)
@@ -517,4 +529,6 @@ def get_cost_by_violation_en(request):
             except Violation_Type.DoesNotExist:
                 return JsonResponse({'error': 'Violation not found'}, status=404)
 
+
+    print("invalid req")
     return JsonResponse({'error': 'Invalid request'}, status=400)
