@@ -27,7 +27,12 @@
       >
         +
       </button>
-      <button type="button" class="btn">
+      <button
+        type="button"
+        class="btn"
+        id="upload_btn"
+        onclick="show_new_form2()"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -355,6 +360,54 @@
             </div>
 
             <div class="fixed-height2 hidden-div" id="excelDiv">
+              <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="excel" value="100" />
+                <div class="mb-3" style="">
+                  <label for="formFile" class="form-label">
+                    Add new violations - Select Excel file (xls or xlsx)
+                  </label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    id="formFile"
+                    name="excelFile"
+                    accept=".xls, .xlsx"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  Submit
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hide" id="add_violation_excel">
+    <div
+      class="modal modal-sheet position-fixed d-block p-4 py-md-5"
+      tabindex="-1"
+      role="dialog"
+      id="myModel"
+    >
+      <div class="modal-dialog" role="document" id="modalTour">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-header">
+            <div class="w-100" style="">
+              <label for="" class="">Add new violation</label>
+            </div>
+            <button
+              type="button"
+              class="close btn-close"
+              onclick="closeModal2()"
+            ></button>
+          </div>
+
+          <div class="modal-body" style="">
+            <div class="" id="excelDiv">
               <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="excel" value="100" />
@@ -728,7 +781,38 @@
       }
     }
   </script>
+  <script>
+    function closeModal2() {
+      add_violation_elm = document.getElementById('add_violation_excel');
+      add_violation_elm.classList.add('hide');
+    }
+  </script>
 
+  <script>
+    function show_new_form2() {
+      console.log('show new form');
+
+      // Check if the user is logged in (you may need to adapt this based on your authentication mechanism)
+      if (isUserLoggedIn()) {
+        add_violation_elm = document.getElementById('add_violation_excel');
+        add_violation_elm.classList.remove('hide');
+      } else {
+        console.log('User is not logged in. Cannot show new form.');
+        // You might want to handle this case, for example, by redirecting the user to the login page.
+      }
+    }
+
+    // Dummy function, replace with your actual authentication check
+    function isUserLoggedIn() {
+      var user_auth = '{{user.is_authenticated}}';
+      console.log(user_auth);
+      if (user_auth == 'True') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
   <style>
     /* Your custom CSS file or style block in your HTML file */
     #myModel .modal-dialog {
