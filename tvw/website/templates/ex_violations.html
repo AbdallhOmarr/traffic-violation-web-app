@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div id="app">
+    <div class="table-responsive">
+      <table id="violationsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Violation ID</th>
+            <th>Violation Type</th>
+
+            <th>Date</th>
+            <th>Time</th>
+            <th>Amount</th>
+            <th>Vehicle</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for violation in violations %}
+          <tr>
+            <td>{{violation.violation_id}}</td>
+            <td>{{violation.violation_type}}</td>
+            <td>{{ violation.date }}</td>
+            <td>{{ violation.time|time:"H:i" }}</td>
+            <td>{{ violation.amount }}</td>
+            <td>{{ violation.vehicle.plate_eng }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#violationsTable').DataTable({});
+  });
+</script>
+{% endblock content %}

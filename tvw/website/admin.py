@@ -1,5 +1,5 @@
 from django.contrib import admin
-from website.models import Employee,PDF,Violation,Vehicle
+from website.models import Employee,PDF,Violation,Vehicle,Violation_Type
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ['ptc_id', 'employee_name','ID_number']
@@ -19,5 +19,11 @@ class VehicleAdmin(admin.ModelAdmin):
     list_display = ['fleet_no','plate_eng','vehicle_user','vehicle_type']
     search_fields = ['fleet_no', 'plate_eng', 'vehicle_user']
 
+
+
+class Violation_TypeAdmin(admin.ModelAdmin):
+    list_display = ['violation_en','violation_ar',"violation_cost"]
+
 admin.site.register(Violation,ViolationAdmin)
 admin.site.register(Vehicle,VehicleAdmin)
+admin.site.register(Violation_Type,Violation_TypeAdmin)

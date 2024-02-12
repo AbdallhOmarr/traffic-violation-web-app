@@ -1,5 +1,7 @@
 from django.db import models
 
+
+
 class Employee(models.Model):
     ptc_id = models.IntegerField(primary_key=True)
     employee_name = models.CharField(max_length=255)
@@ -27,10 +29,10 @@ class Violation(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, default="")
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True, default="")
     pdf = models.ForeignKey(PDF, on_delete=models.CASCADE, null=True, blank=True, default="")
-
+    status= models.CharField(max_length=100,default="normal")
 
 class Violation_Type(models.Model):
     violation_en = models.CharField( max_length=500)
     violation_ar = models.CharField( max_length=500)
     violation_cost = models.FloatField()
-    
+    status= models.CharField(max_length=100,default="normal")

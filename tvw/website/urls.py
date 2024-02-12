@@ -26,6 +26,7 @@ urlpatterns = [
     path("logout", views.logout_view,name='logout'),
 
     path("violations",views.view_violation,name='violations'),
+    path("ex_violations",views.ex_violations,name='ex_violations'),
     path('export_violations/', views.export_violations, name='export_violations'),
     path("new-violations",views.add_violations,name='new-violations'),
     path("print-violation",views.print_document,name="print-violation"),

@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 
 from website.models import Violation, Employee, PDF , Vehicle, Violation_Type
 from hijri_converter import convert
+from django.db.models import F
 
 import json 
 import pandas as pd 
@@ -72,7 +73,7 @@ def view_violation(request):
             violation_type = row['تفاصيل المخالفة بالانجليزي']
             violation_type_arabic = row['تفاصيل المخالفة بالعربي']
 
-
+            violation_type_instance = Violation_Type.objects.get(violation_type_en=violation_type)
             # Create a Violation instance
             try:
                 vehicle = Vehicle.objects.get(plate_ar=bus_plate)
@@ -88,6 +89,7 @@ def view_violation(request):
                 amount=amount,
                 violation_type=violation_type,
                 violation_type_arabic=violation_type_arabic,
+                status= violation_type_instance.status
                 )
 
                 violation_instance.save()
@@ -140,6 +142,7 @@ def view_violation(request):
                 amount=amount,
                 violation_type=violation_type_english,
                 violation_type_arabic=violation_type_arabic,
+                status= violation_type.status
                 )
 
                 violation_instance.save()
@@ -152,7 +155,18 @@ def view_violation(request):
         messages.success(request, 'sucess')
         return redirect("violations")
     
-    violations = Violation.objects.all()
+    
+    if request.user.is_authenticated:
+        user_groups = request.user.groups.values_list('name', flat=True)  # Assuming user groups are related to vehicles
+        print(user_groups)
+        if user_groups:
+            # Assuming each group corresponds to a vehicle user
+            # violations = Violation.objects.filter(vehicle__vehicle_user__in=user_groups)
+
+            violations = Violation.objects.filter(vehicle__vehicle_user__in=user_groups).exclude(status="excluded")
+
+        else:
+            violations = []
     employees = Employee.objects.all()
     vehicles = Vehicle.objects.all()
     violation_types = Violation_Type.objects.all()
@@ -186,6 +200,21 @@ def view_violation(request):
     }
     
     return render(request,"view_violations.html",context)
+
+
+@login_required(login_url='home')
+def ex_violations(request):
+    context = {}
+    if request.user.is_authenticated:
+        user_groups = request.user.groups.values_list('name', flat=True)  # Assuming user groups are related to vehicles
+        
+        if "admin" in user_groups:
+            # Filter Violation objects where violation_type_id is in the list of excluded IDs
+            violations = Violation.objects.filter(status="excluded")
+            
+            context['violations'] = violations
+                
+    return render(request, "ex_violations.html", context)
 
 
 @login_required(login_url='home')
@@ -297,6 +326,7 @@ def add_violations(request):
             amount = row['مبلغ المخالفة']
             violation_type = row['تفاصيل المخالفة بالانجليزي']
             violation_type_arabic = row['تفاصيل المخالفة بالعربي']
+            violation_type = Violation_Type.objects.get(violation_en=violation_type)
 
 
             print(f"bus plate:{bus_plate}")
@@ -315,6 +345,8 @@ def add_violations(request):
                 amount=amount,
                 violation_type=violation_type,
                 violation_type_arabic=violation_type_arabic,
+                status=violation_type.status
+                
                 )
 
                 violation_instance.save()
@@ -346,7 +378,7 @@ def add_violations(request):
             print(f"time:{time}")
             print(f"violation_type_en:{violation_type_en}")
             print(f"bus plate:{bus_plate}")
-
+            
             # Create a Violation instance
             try:
                 vehicle = Vehicle.objects.get(plate_ar=bus_plate)
@@ -362,6 +394,7 @@ def add_violations(request):
                 amount=violation_type.violation_cost,
                 violation_type=violation_type.violation_en,
                 violation_type_arabic=violation_type.violation_ar,
+                status=violation_type.status
                 )
 
                 violation_instance.save()

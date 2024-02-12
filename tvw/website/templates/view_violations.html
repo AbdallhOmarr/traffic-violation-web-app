@@ -50,23 +50,6 @@
         </svg>
       </button>
     </div>
-    <div
-      id="middle_pan"
-      class="col-md-10 d-flex justify-content-center flex-wrap"
-    >
-      <div class="row m-1">
-        <button type="button" class="btn m-2">East Depot</button>
-        <button type="button" class="btn m-2">occ</button>
-      </div>
-      <div class="row m-1">
-        <button type="button" class="btn m-2">West Depot</button>
-        <button type="button" class="btn m-2">Sales & Marketing</button>
-      </div>
-      <div class="row m-1">
-        <button type="button" class="btn m-2">Fm Department</button>
-        <button type="button" class="btn m-2">Training</button>
-      </div>
-    </div>
     <div id="" class="row d-flex justify-content-center">
       <div id="center_pan" class="col-md-1 me-5">
         <button type="button" class="btn m-2 d-block">Home</button>
@@ -76,8 +59,8 @@
 
       {% comment %} end ola {% endcomment %}
       <div id="table_pan" class="col-md-10">
-        <div class="fixed-height overflow-y-scroll">
-          <table class="table table-hover">
+        <div id="app" class="">
+          <table id="vioTable" class="table table-hover" style="height: 50dvh">
             <thead class="sticky-top">
               <tr class="">
                 <th scope="col" class="small-text violation_no">
@@ -812,6 +795,12 @@
         return false;
       }
     }
+  </script>
+  <!-- DataTables initialization script -->
+  <script>
+    $(document).ready(function () {
+      $('#vioTable').DataTable({});
+    });
   </script>
   <style>
     /* Your custom CSS file or style block in your HTML file */

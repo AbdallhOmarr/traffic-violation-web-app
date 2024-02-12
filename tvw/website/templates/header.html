@@ -13,11 +13,10 @@
       </li>
       <li class="nav-item">
         <a
-          href="#"
-          onclick="show_new_form()"
+          href="{% url 'ex_violations' %}"
           class="nav-link link-body-emphasis px-2"
         >
-          New
+          Excluded Violations
         </a>
       </li>
     </ul>
@@ -116,10 +115,11 @@
                   <div class="row">Time</div>
                   <div class="row">
                     <input
-                      type="time"
+                      type="text"
                       class="form-control"
                       name="time"
-                      placeholder="time"
+                      id="timePicker"
+                      placeholder="Select Time (24-hour format)"
                       required
                     />
                   </div>
@@ -296,21 +296,20 @@
   });
 </script>
 <script>
-  document
-    .getElementById('selection_method')
-    .addEventListener('change', function () {
-      var selectedMethod = this.value;
-      console.log(selectedMethod);
-      // Show/hide divs based on the selected method
-      if (selectedMethod === 'excel') {
-        document.getElementById('excelDiv').classList.remove('hidden-div');
-        document.getElementById('formDiv').classList.add('hidden-div');
-      } else if (selectedMethod === 'form') {
-        document.getElementById('formDiv').classList.remove('hidden-div');
-        document.getElementById('excelDiv').classList.add('hidden-div');
-      }
-    });
+  $('#fecha').datetimepicker({
+    format: 'DD/MM/YYYY HH:mm',
+  });
+</script>
+<script>
+  flatpickr('#timePicker', {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:i',
+    time_24hr: true,
+  });
+</script>
 
+<script>
   // Function to show the success pop-up
   function showSuccessPopup(status, message) {
     var successPopup = document.getElementById('success-popup');
