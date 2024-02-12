@@ -17,6 +17,10 @@ from docxtpl import InlineImage
 from docxtpl import DocxTemplate
 from django.contrib import messages
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Violation
+
 
 # Create your views here.
 def home(request):
@@ -158,7 +162,6 @@ def view_violation(request):
     
     if request.user.is_authenticated:
         user_groups = request.user.groups.values_list('name', flat=True)  # Assuming user groups are related to vehicles
-        print(user_groups)
         if user_groups:
             # Assuming each group corresponds to a vehicle user
             # violations = Violation.objects.filter(vehicle__vehicle_user__in=user_groups)
@@ -550,10 +553,8 @@ def print_document(request):
 @login_required(login_url='home')
 def get_cost_by_violation_en(request):
     if request.method == 'POST':
-        print("post req")
         data = json.loads(request.body)
         violation_en = data.get('violation_en', None)
-        print(violation_en)
         if violation_en:
             try:
                 violation = Violation_Type.objects.get(violation_en=violation_en)
@@ -565,3 +566,73 @@ def get_cost_by_violation_en(request):
 
     print("invalid req")
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@require_POST
+@login_required(login_url='home')
+def update_violations_status(request):
+    # Check if the request contains the selected violation IDs and the new status
+    data = json.loads(request.body.decode('utf-8'))
+    print(data)
+    # Access the JSON data
+    violation_ids = data.get('violation_ids')
+    new_status = data.get('new_status')
+    # Update the status of the selected violations
+    try:
+        violations = Violation.objects.filter(violation_id__in=violation_ids)
+        violations.update(status=new_status)
+        print(f"violations new status:{violations}")
+        return JsonResponse({'success': True, 'message': 'Violation status updated successfully'})
+    except Exception as e:
+        print(f"error:{e}")
+
+        return JsonResponse({'success': False, 'message': str(e)})
+    
+    
+
+
+
+@login_required(login_url='home')
+def informing_drivers(request):
+     # adding violation by excel
+    if request.user.is_authenticated:
+        user_groups = request.user.groups.values_list('name', flat=True)  # Assuming user groups are related to vehicles
+        if "informing_drivers" in user_groups or "admin" in user_groups:
+            violations = Violation.objects.filter(status="driver_assigned")
+        else:
+            violations = []
+
+    employees = Employee.objects.all()
+    vehicles = Vehicle.objects.all()
+    violation_types = Violation_Type.objects.all()
+    
+    employees_ptc = [] 
+    for employee in employees:
+        employees_ptc.append(employee.ptc_id)
+    
+    
+    merged_data= []
+    for violation in violations:
+        vehicle= violation.vehicle
+            
+        violation_dict = model_to_dict(violation)
+        vehicle_dict = model_to_dict(vehicle)
+        if violation.employee:
+            employee_dict = model_to_dict(violation.employee)
+        else:
+            employee_dict = {
+                "ptc_id":"",
+                "ID_number":None,
+                "employee_name":None
+            }
+        if vehicle:
+            merged_data.append({**violation_dict, **vehicle_dict,**employee_dict})        
+        
+    context = {
+        "violations":merged_data,
+        "employees_ptc":employees_ptc,
+        "violation_types":violation_types
+    }
+    
+    return render(request,"informing_drivers.html",context)
+
